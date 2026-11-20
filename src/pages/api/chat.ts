@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-export const prerender = false;
+export const prerender = process.env.GITHUB_PAGES !== 'true';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
