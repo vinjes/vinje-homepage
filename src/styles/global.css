@@ -1,6 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Markenfarben und Schriften (vorher in tailwind.config.mjs) */
+@theme {
+    --color-paper: #F7F6F2;
+    --color-paperDark: #EFECE4;
+    --color-ink: #141414;
+    --color-inkMuted: #555555;
+    --color-silverBorder: #E2E0D8;
+    --color-silverAccent: #C8C6BE;
+    --font-sans: "Inter", sans-serif;
+    --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
+}
 
 /* Custom CSS für den metallisch-silbrigen Wellenverlauf (passend zur Visitenkarten-Rückseite) & feine Mikro-Animationen */
 body {

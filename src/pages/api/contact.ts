@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 
-export const prerender = false;
+export const prerender = process.env.GITHUB_PAGES !== 'true';
 
 function escapeHtml(input: string): string {
   return input
