@@ -1,0 +1,383 @@
+---
+import { SITE_CONFIG, getStyledCalendlyUrl } from '../config/site';
+
+const embedUrl = getStyledCalendlyUrl();
+const rawUrl = SITE_CONFIG.calendlyUrl;
+---
+
+<!-- ==================== 6. INTERAKTIVER PROJEKTKONFIGURATOR, CALENDLY & KONTAKT ==================== -->
+<section id="kontakt" class="py-20 sm:py-28">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- Linke Spalte: Direkte Kontaktdaten (von der Visitenkarte) -->
+            <div class="lg:col-span-5 space-y-8 reveal">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-widest text-inkMuted">Kontakt &amp; Potenzial-Check</span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-ink mt-2">
+                        Bereit für den nächsten Schritt?
+                    </h2>
+                    <p class="text-base text-inkMuted mt-4 leading-relaxed">
+                        Wählt rechts euer Fokusthema für eine schriftliche Ersteinschätzung innerhalb von 24 Stunden – oder bucht euch direkt einen 20-minütigen Kennenlern-Slot im Kalender.
+                    </p>
+                </div>
+
+                <!-- Visitenkarten-Kontaktdaten Box -->
+                <div class="p-6 rounded-2xl bg-white/80 border border-silverBorder space-y-4">
+                    <div class="text-xs font-mono uppercase tracking-wider text-inkMuted">Direkter Kontakt</div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between gap-2">
+                            <a href="mailto:info@vinje.de" class="font-medium text-ink hover:underline flex items-center gap-2.5">
+                                <svg class="w-4 h-4 text-inkMuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                                info@vinje.de
+                            </a>
+                            <button type="button" id="copy-email-btn" class="text-xs px-2.5 py-1 rounded-md bg-paper border border-silverBorder text-inkMuted hover:text-ink hover:border-ink transition-colors cursor-pointer">
+                                Kopieren
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 text-ink">
+                            <svg class="w-4 h-4 text-inkMuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+                            <span>www.vinje.de</span>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 text-ink">
+                            <svg class="w-4 h-4 text-inkMuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                            <span>@vinje.studio</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-silverBorder">
+                        <button
+                            type="button"
+                            data-calendly-open
+                            class="w-full py-2.5 px-4 rounded-xl bg-paper hover:bg-paperDark border border-silverBorder hover:border-ink text-ink text-xs font-medium transition-all flex items-center justify-between cursor-pointer"
+                        >
+                            <span class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                                </svg>
+                                <span>20-Min-Erstgespräch via Calendly</span>
+                            </span>
+                            <span class="font-mono text-inkMuted">↗</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rechte Spalte: Umschalter zwischen 2-Klick-Projektkonfigurator & eingebettetem Calendly -->
+            <div class="lg:col-span-7 reveal">
+                <div class="rounded-2xl bg-white/90 border border-silverBorder p-6 sm:p-9 shadow-[0_20px_50px_-20px_rgba(24,24,24,0.08)]">
+                    
+                    <!-- Modus-Tabs: Formular vs. Calendly -->
+                    <div class="grid grid-cols-2 gap-1.5 p-1 mb-6 rounded-xl bg-paper border border-silverBorder" role="tablist" aria-label="Kontakt-Modus wählen">
+                        <button
+                            type="button"
+                            id="tab-mode-form"
+                            class="contact-mode-tab py-2.5 px-3 rounded-lg text-xs font-medium bg-ink text-paper transition-all cursor-pointer flex items-center justify-center gap-2"
+                        >
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+                            </svg>
+                            <span>Projekt anfragen</span>
+                        </button>
+                        <button
+                            type="button"
+                            id="tab-mode-calendly"
+                            class="contact-mode-tab py-2.5 px-3 rounded-lg text-xs font-medium text-inkMuted hover:text-ink transition-all cursor-pointer flex items-center justify-center gap-2"
+                        >
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                            </svg>
+                            <span>Termin direkt buchen</span>
+                        </button>
+                    </div>
+
+                    <!-- ANSICHT 1: 2-Klick-Projektkonfigurator & Formular -->
+                    <div id="contact-form-panel">
+                        <form id="contact-form" class="space-y-6">
+                            <!-- Schritt 1: Themenbereich wählen -->
+                            <div>
+                                <label class="block text-xs font-mono uppercase tracking-wider text-inkMuted mb-3">
+                                    01 // Wobei können wir unterstützen?
+                                </label>
+                                <div class="grid grid-cols-2 gap-2.5" id="topic-selector">
+                                    <button type="button" data-topic="KI-Automatisierung" class="topic-btn active text-left p-3.5 rounded-xl border border-ink bg-ink text-paper text-sm font-medium transition-all cursor-pointer">
+                                        KI-Automatisierung
+                                    </button>
+                                    <button type="button" data-topic="Machine Learning" class="topic-btn text-left p-3.5 rounded-xl border border-silverBorder bg-paper text-ink text-sm font-medium hover:border-ink transition-all cursor-pointer">
+                                        Machine Learning
+                                    </button>
+                                    <button type="button" data-topic="Datenanalyse & BI" class="topic-btn text-left p-3.5 rounded-xl border border-silverBorder bg-paper text-ink text-sm font-medium hover:border-ink transition-all cursor-pointer">
+                                        Datenanalyse &amp; BI
+                                    </button>
+                                    <button type="button" data-topic="Potenzial-Beratung" class="topic-btn text-left p-3.5 rounded-xl border border-silverBorder bg-paper text-ink text-sm font-medium hover:border-ink transition-all cursor-pointer">
+                                        Potenzial-Beratung
+                                    </button>
+                                </div>
+                                <input type="hidden" id="selected-topic" name="topic" value="KI-Automatisierung">
+                            </div>
+
+                            <!-- Schritt 2: Kontaktdaten & Nachricht -->
+                            <div class="space-y-4 pt-2 border-t border-silverBorder">
+                                <div class="text-xs font-mono uppercase tracking-wider text-inkMuted pt-1">
+                                    02 // Eure Projektdaten
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="name" class="block text-xs font-medium text-ink mb-1.5">Name / Unternehmen *</label>
+                                        <input type="text" id="name" name="name" required placeholder="Max Mustermann" class="w-full px-4 py-3 rounded-xl bg-paper border border-silverBorder text-sm text-ink placeholder:text-inkMuted/60 focus:outline-none focus:border-ink transition-colors">
+                                    </div>
+                                    <div>
+                                        <label for="email" class="block text-xs font-medium text-ink mb-1.5">E-Mail-Adresse *</label>
+                                        <input type="email" id="email" name="email" required placeholder="max@unternehmen.de" class="w-full px-4 py-3 rounded-xl bg-paper border border-silverBorder text-sm text-ink placeholder:text-inkMuted/60 focus:outline-none focus:border-ink transition-colors">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="message" class="block text-xs font-medium text-ink mb-1.5">Kurze Projektbeschreibung *</label>
+                                    <textarea id="message" name="message" rows="3" required placeholder="Welche Prozesse oder Daten möchtet ihr optimieren?" class="w-full px-4 py-3 rounded-xl bg-paper border border-silverBorder text-sm text-ink placeholder:text-inkMuted/60 focus:outline-none focus:border-ink transition-colors resize-none"></textarea>
+                                </div>
+
+                                <!-- Unsichtbares Honeypot-Feld gegen Spam-Bots -->
+                                <div class="hidden" aria-hidden="true">
+                                    <label for="website">Website</label>
+                                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                                </div>
+                            </div>
+
+                            <!-- Fehlermeldung bei Versandproblemen -->
+                            <div id="form-error" class="hidden p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 leading-relaxed"></div>
+
+                            <button type="submit" id="submit-btn" class="w-full py-3.5 px-6 rounded-full bg-ink text-paper text-sm font-medium hover:bg-ink/85 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                                <span id="submit-btn-text">Unverbindliche Anfrage senden</span>
+                                <svg id="submit-btn-icon" class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </form>
+
+                        <!-- Bestätigungs-Ansicht nach Absenden -->
+                        <div id="form-success" class="hidden py-8 text-center space-y-4">
+                            <div class="w-12 h-12 rounded-full bg-ink text-paper mx-auto flex items-center justify-center">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-display text-xl font-semibold text-ink">Vielen Dank für eure Nachricht!</h3>
+                            <p id="success-summary" class="text-sm text-inkMuted max-w-md mx-auto leading-relaxed">
+                                Vincent &amp; Jesse haben eure Anfrage erhalten und melden sich in Kürze bei euch.
+                            </p>
+                            <button type="button" id="reset-form-btn" class="mt-2 inline-flex items-center px-4 py-2 rounded-full border border-silverBorder text-xs font-medium text-ink hover:border-ink transition-colors cursor-pointer">
+                                Weitere Anfrage stellen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ANSICHT 2: Eingebetteter Calendly-Kalender -->
+                    <div id="contact-calendly-panel" data-embed-url={embedUrl} class="hidden space-y-4">
+                        <div class="flex items-center justify-between text-xs text-inkMuted">
+                            <span>Wählt direkt einen passenden 20-Minuten-Slot:</span>
+                            <a
+                                href={rawUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="font-mono text-ink hover:underline"
+                            >
+                                Calendly extern öffnen ↗
+                            </a>
+                        </div>
+                        <div class="relative rounded-xl overflow-hidden border border-silverBorder bg-[#F7F6F2] h-[640px]">
+                            <div id="inline-calendly-loader" class="absolute inset-0 flex items-center justify-center text-xs font-mono text-inkMuted z-0">
+                                Kalender wird geladen …
+                            </div>
+                            <iframe
+                                id="inline-calendly-iframe"
+                                title="Calendly Terminbuchung"
+                                class="relative z-10 w-full h-full border-0 bg-transparent"
+                            ></iframe>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    // Modus-Umschalter: Formular vs. Eingebettetes Calendly
+    const tabModeForm = document.getElementById('tab-mode-form');
+    const tabModeCalendly = document.getElementById('tab-mode-calendly');
+    const panelForm = document.getElementById('contact-form-panel');
+    const panelCalendly = document.getElementById('contact-calendly-panel');
+    const inlineCalendlyIframe = document.getElementById('inline-calendly-iframe') as HTMLIFrameElement | null;
+    const inlineCalendlyLoader = document.getElementById('inline-calendly-loader');
+
+    inlineCalendlyIframe?.addEventListener('load', () => {
+        if (inlineCalendlyIframe.src) {
+            inlineCalendlyLoader?.classList.add('hidden');
+        }
+    });
+
+    const setContactMode = (mode: 'form' | 'calendly') => {
+        if (!tabModeForm || !tabModeCalendly || !panelForm || !panelCalendly) return;
+        if (mode === 'form') {
+            tabModeForm.classList.add('bg-ink', 'text-paper');
+            tabModeForm.classList.remove('text-inkMuted');
+            tabModeCalendly.classList.remove('bg-ink', 'text-paper');
+            tabModeCalendly.classList.add('text-inkMuted');
+            panelForm.classList.remove('hidden');
+            panelCalendly.classList.add('hidden');
+        } else {
+            tabModeCalendly.classList.add('bg-ink', 'text-paper');
+            tabModeCalendly.classList.remove('text-inkMuted');
+            tabModeForm.classList.remove('bg-ink', 'text-paper');
+            tabModeForm.classList.add('text-inkMuted');
+            panelCalendly.classList.remove('hidden');
+            panelForm.classList.add('hidden');
+
+            const baseEmbedUrl = panelCalendly.getAttribute('data-embed-url');
+            if (inlineCalendlyIframe && baseEmbedUrl && !inlineCalendlyIframe.getAttribute('src')) {
+                const domain = window.location.hostname || 'localhost';
+                inlineCalendlyIframe.src = `${baseEmbedUrl}&embed_domain=${encodeURIComponent(domain)}`;
+            }
+        }
+    };
+
+    tabModeForm?.addEventListener('click', () => setContactMode('form'));
+    tabModeCalendly?.addEventListener('click', () => setContactMode('calendly'));
+
+    // Interaktiver Projektkonfigurator (Themenwahl)
+    const topicBtns = document.querySelectorAll('.topic-btn');
+    const hiddenTopicInput = document.getElementById('selected-topic') as HTMLInputElement | null;
+
+    topicBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            setContactMode('form');
+            topicBtns.forEach(b => {
+                b.classList.remove('border-ink', 'bg-ink', 'text-paper');
+                b.classList.add('border-silverBorder', 'bg-paper', 'text-ink');
+            });
+            btn.classList.remove('border-silverBorder', 'bg-paper', 'text-ink');
+            btn.classList.add('border-ink', 'bg-ink', 'text-paper');
+            if (hiddenTopicInput) {
+                hiddenTopicInput.value = btn.getAttribute('data-topic') || 'KI-Automatisierung';
+            }
+        });
+    });
+
+    // Kontaktformular-Handling (Versand über Astro API-Route /api/contact + Resend)
+    const contactForm = document.getElementById('contact-form') as HTMLFormElement | null;
+    const formSuccess = document.getElementById('form-success');
+    const formError = document.getElementById('form-error');
+    const successSummary = document.getElementById('success-summary');
+    const resetFormBtn = document.getElementById('reset-form-btn');
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+    const submitBtnText = document.getElementById('submit-btn-text');
+    const nameInput = document.getElementById('name') as HTMLInputElement | null;
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+    const messageInput = document.getElementById('message') as HTMLTextAreaElement | null;
+    const websiteInput = document.getElementById('website') as HTMLInputElement | null;
+
+    if (contactForm && formSuccess && successSummary) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameVal = nameInput?.value.trim() || '';
+            const emailVal = emailInput?.value.trim() || '';
+            const messageVal = messageInput?.value.trim() || '';
+            const topicVal = hiddenTopicInput?.value || 'KI-Automatisierung';
+            const websiteVal = websiteInput?.value.trim() || '';
+
+            if (formError) {
+                formError.classList.add('hidden');
+                formError.textContent = '';
+            }
+
+            if (submitBtn && submitBtnText) {
+                submitBtn.disabled = true;
+                submitBtnText.textContent = 'Wird gesendet …';
+            }
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        topic: topicVal,
+                        name: nameVal,
+                        email: emailVal,
+                        message: messageVal,
+                        website: websiteVal,
+                    }),
+                }).catch(() => null);
+
+                // Falls auf statischem Hosting (z. B. GitHub Pages) keine /api/contact Server-Route läuft:
+                if (!response || response.status === 404 || response.status === 405) {
+                    const subject = encodeURIComponent(`[vinje Anfrage] ${topicVal} — ${nameVal}`);
+                    const body = encodeURIComponent(
+                        `Thema: ${topicVal}\nName / Unternehmen: ${nameVal}\nE-Mail: ${emailVal}\n\nProjektbeschreibung:\n${messageVal}`
+                    );
+                    window.location.href = `mailto:info@vinje.de?subject=${subject}&body=${body}`;
+                    successSummary.textContent = `Danke, ${nameVal}! Euer E-Mail-Programm wurde mit eurer Anfrage zum Bereich „${topicVal}“ an info@vinje.de geöffnet.`;
+                    contactForm.classList.add('hidden');
+                    formSuccess.classList.remove('hidden');
+                    return;
+                }
+
+                const result = await response.json();
+
+                if (!response.ok || !result.ok) {
+                    throw new Error(result.error || 'Beim Senden der Anfrage ist ein Fehler aufgetreten.');
+                }
+
+                successSummary.textContent = `Danke, ${nameVal}! Vincent & Jesse haben eure Anfrage zum Bereich „${topicVal}“ erhalten und melden sich innerhalb von 24 Stunden bei euch.`;
+                contactForm.classList.add('hidden');
+                formSuccess.classList.remove('hidden');
+            } catch (err: any) {
+                if (formError) {
+                    formError.textContent = err?.message || 'Verbindungsfehler beim Senden. Bitte schreibt uns direkt an info@vinje.de.';
+                    formError.classList.remove('hidden');
+                }
+            } finally {
+                if (submitBtn && submitBtnText) {
+                    submitBtn.disabled = false;
+                    submitBtnText.textContent = 'Unverbindliche Anfrage senden';
+                }
+            }
+        });
+    }
+
+    if (resetFormBtn && contactForm && formSuccess) {
+        resetFormBtn.addEventListener('click', () => {
+            contactForm.reset();
+            if (formError) formError.classList.add('hidden');
+            formSuccess.classList.add('hidden');
+            contactForm.classList.remove('hidden');
+        });
+    }
+
+    // E-Mail kopieren (mit execCommand Fallback für maximale Kompatibilität)
+    const copyEmailBtn = document.getElementById('copy-email-btn');
+    if (copyEmailBtn) {
+        copyEmailBtn.addEventListener('click', () => {
+            const tempInput = document.createElement('input');
+            tempInput.value = 'info@vinje.de';
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                copyEmailBtn.textContent = 'Kopiert ✓';
+                setTimeout(() => {
+                    copyEmailBtn.textContent = 'Kopieren';
+                }, 2000);
+            } catch {
+                copyEmailBtn.textContent = 'info@vinje.de';
+            }
+            document.body.removeChild(tempInput);
+        });
+    }
+</script>

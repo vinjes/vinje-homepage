@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS für den metallisch-silbrigen Wellenverlauf (passend zur Visitenkarten-Rückseite) & feine Mikro-Animationen */
+body {
+    background-color: #F7F6F2;
+    color: #141414;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* Subtile Papier-Körnung als Hintergrund-Overlay */
+.paper-texture {
+    background-image: radial-gradient(rgba(24, 24, 24, 0.035) 1px, transparent 0);
+    background-size: 24px 24px;
+}
+
+/* Metallisch-silbrige Wellen-Animation im Hero (inspiriert von der Visitenkarten-Rückseite) */
+@keyframes waveDriftSlow {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+    33% {
+        transform: translate3d(-3.5%, 2.5%, 0) scale(1.06) rotate(-1.2deg);
+    }
+    66% {
+        transform: translate3d(2.5%, -1.8%, 0) scale(1.03) rotate(0.8deg);
+    }
+}
+
+@keyframes waveDriftReverse {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1.02) rotate(0deg);
+    }
+    33% {
+        transform: translate3d(4%, -2.8%, 0) scale(1.07) rotate(1.4deg);
+    }
+    66% {
+        transform: translate3d(-2.5%, 2.2%, 0) scale(0.98) rotate(-1deg);
+    }
+}
+
+@keyframes waveShimmerFlow {
+    0% {
+        stroke-dashoffset: 1600;
+        opacity: 0.35;
+    }
+    50% {
+        opacity: 0.95;
+    }
+    100% {
+        stroke-dashoffset: -1600;
+        opacity: 0.35;
+    }
+}
+
+@keyframes silverOrbFloat {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(40px, -28px, 0) scale(1.12);
+    }
+}
+
+.animate-wave-slow {
+    transform-origin: center;
+    animation: waveDriftSlow 14s ease-in-out infinite;
+}
+
+.animate-wave-reverse {
+    transform-origin: center;
+    animation: waveDriftReverse 17s ease-in-out infinite;
+}
+
+.animate-wave-shimmer {
+    stroke-dasharray: 420 1180;
+    animation: waveShimmerFlow 9s linear infinite;
+}
+
+.animate-wave-shimmer-delayed {
+    stroke-dasharray: 360 1240;
+    animation: waveShimmerFlow 11s linear infinite reverse;
+}
+
+.animate-silver-orb {
+    animation: silverOrbFloat 12s ease-in-out infinite;
+}
+
+/* Feiner metallischer Schimmer-Effekt auf Karten */
+.silver-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.72) 0%, rgba(247, 246, 242, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.silver-card:hover {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(239, 236, 228, 0.95) 100%);
+    border-color: #181818;
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -15px rgba(24, 24, 24, 0.08);
+}
+
+/* Tab-Übergänge im Live-Pipeline-Widget */
+.pipeline-fade {
+    animation: fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scroll-Reveal Klassen */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}

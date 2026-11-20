@@ -1,0 +1,117 @@
+---
+import { SITE_CONFIG, getStyledCalendlyUrl } from '../config/site';
+
+const embedUrl = getStyledCalendlyUrl();
+const rawUrl = SITE_CONFIG.calendlyUrl;
+---
+
+<!-- ==================== CALENDLY TERMINBUCHUNGS-MODAL ==================== -->
+<div
+    id="calendly-modal"
+    data-embed-url={embedUrl}
+    class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-6 bg-ink/50 backdrop-blur-xs"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="calendly-modal-title"
+>
+    <div class="bg-paper border border-silverBorder rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl flex flex-col h-[86vh] max-h-[760px]">
+        <!-- Modal Header -->
+        <div class="px-5 sm:px-6 py-4 border-b border-silverBorder flex items-center justify-between bg-white/90 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <div>
+                    <h3 id="calendly-modal-title" class="font-display text-base font-semibold text-ink">
+                        20-Minuten-Erstgespräch buchen
+                    </h3>
+                    <p class="text-xs text-inkMuted">Direkt im Kalender von Vincent &amp; Jesse</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a
+                    href={rawUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 text-xs font-mono px-2.5 py-1.5 rounded-lg border border-silverBorder text-inkMuted hover:text-ink hover:border-ink transition-colors"
+                >
+                    <span>Extern öffnen</span>
+                    <span>↗</span>
+                </a>
+                <button
+                    type="button"
+                    id="close-calendly-modal"
+                    class="p-1.5 rounded-lg text-inkMuted hover:text-ink hover:bg-paperDark transition-colors cursor-pointer"
+                    aria-label="Terminbuchung schließen"
+                >
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Calendly Iframe Container -->
+        <div class="relative flex-1 w-full bg-[#F7F6F2] overflow-hidden">
+            <div id="calendly-modal-loader" class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-xs font-mono text-inkMuted z-0">
+                <span>Calendly-Kalender wird geladen …</span>
+            </div>
+            <iframe
+                id="calendly-modal-iframe"
+                title="Calendly Terminbuchung mit vinje"
+                class="relative z-10 w-full h-full border-0 bg-transparent"
+                allow="payment"
+            ></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    const calendlyModal = document.getElementById('calendly-modal');
+    const calendlyIframe = document.getElementById('calendly-modal-iframe') as HTMLIFrameElement | null;
+    const calendlyLoader = document.getElementById('calendly-modal-loader');
+    const closeCalendlyBtn = document.getElementById('close-calendly-modal');
+
+    calendlyIframe?.addEventListener('load', () => {
+        if (calendlyIframe.src) {
+            calendlyLoader?.classList.add('hidden');
+        }
+    });
+
+    const openCalendlyModal = () => {
+        if (!calendlyModal) return;
+        calendlyModal.classList.remove('hidden');
+        calendlyModal.classList.add('flex');
+
+        const baseEmbedUrl = calendlyModal.getAttribute('data-embed-url');
+        if (calendlyIframe && baseEmbedUrl && !calendlyIframe.getAttribute('src')) {
+            const domain = window.location.hostname || 'localhost';
+            calendlyIframe.src = `${baseEmbedUrl}&embed_domain=${encodeURIComponent(domain)}`;
+        }
+    };
+
+    const closeCalendlyModal = () => {
+        if (!calendlyModal) return;
+        calendlyModal.classList.add('hidden');
+        calendlyModal.classList.remove('flex');
+    };
+
+    // Event-Delegation, damit alle [data-calendly-open] Buttons zuverlässig funktionieren
+    document.addEventListener('click', (e) => {
+        const target = (e.target as HTMLElement | null)?.closest('[data-calendly-open]');
+        if (target) {
+            e.preventDefault();
+            openCalendlyModal();
+        }
+    });
+
+    closeCalendlyBtn?.addEventListener('click', closeCalendlyModal);
+
+    calendlyModal?.addEventListener('click', (e) => {
+        if (e.target === calendlyModal) closeCalendlyModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && calendlyModal && !calendlyModal.classList.contains('hidden')) {
+            closeCalendlyModal();
+        }
+    });
+</script>

@@ -1,0 +1,423 @@
+<!-- ==================== 2. HERO-SEKTION MIT SILBERNEN WELLEN ==================== -->
+<section class="relative overflow-hidden pt-14 pb-20 sm:pt-24 sm:pb-28 border-b border-silverBorder">
+    
+    <!-- Fließender silbrig-metallischer Wellenhintergrund (inspiriert von der Visitenkarten-Rückseite) -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <!-- Sanft pulsierende silbrig-weiße Lichtakzente -->
+        <div class="animate-silver-orb absolute -top-24 right-1/4 w-[28rem] h-[28rem] rounded-full bg-gradient-to-br from-white/90 via-[#DFDDD5]/50 to-transparent blur-3xl"></div>
+        <div class="animate-silver-orb absolute -bottom-28 left-10 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tr from-[#C9C7BE]/45 via-white/85 to-transparent blur-3xl" style="animation-delay: -6s;"></div>
+
+        <!-- Echtzeit-Canvas für fließende metallische Seidenwellen -->
+        <canvas id="hero-wave-canvas" class="absolute inset-0 w-full h-full opacity-90"></canvas>
+
+        <!-- Vektor-Wellen & animierte Licht-Glanzlinien -->
+        <svg class="relative w-full h-full object-cover opacity-85" viewBox="0 0 1440 820" fill="none" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="silverWave1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+                    <stop offset="38%" stop-color="#DFDDD5" stop-opacity="0.65"/>
+                    <stop offset="68%" stop-color="#AEACA3" stop-opacity="0.32"/>
+                    <stop offset="100%" stop-color="#F7F6F2" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="silverWave2" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+                    <stop offset="45%" stop-color="#C9C7BE" stop-opacity="0.45"/>
+                    <stop offset="80%" stop-color="#8F8D85" stop-opacity="0.22"/>
+                    <stop offset="100%" stop-color="#F7F6F2" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="silverHighlight" x1="0%" y1="50%" x2="100%" y2="50%">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0"/>
+                    <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#B5B3AA" stop-opacity="0.2"/>
+                </linearGradient>
+            </defs>
+
+            <!-- Obere rechte metallische Seidenwelle -->
+            <g class="animate-wave-slow">
+                <path d="M680 -60 C820 140, 1080 230, 1500 280 L1500 -60 Z" fill="url(#silverWave2)"/>
+                <path d="M760 -40 C910 155, 1140 215, 1480 250" stroke="url(#silverHighlight)" stroke-width="2.5"/>
+                <path class="animate-wave-shimmer" d="M760 -40 C910 155, 1140 215, 1480 250" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M840 -50 C960 120, 1190 190, 1490 210" stroke="#9C9A92" stroke-opacity="0.28" stroke-width="1.2"/>
+            </g>
+
+            <!-- Untere linke fließende Silberwelle -->
+            <g class="animate-wave-reverse">
+                <path d="M-80 240 C240 310, 390 560, 740 610 C1050 655, 1260 540, 1520 670 L1520 880 L-80 880 Z" fill="url(#silverWave1)"/>
+                <path d="M-60 280 C250 350, 380 575, 730 615 C1030 650, 1250 560, 1500 660" stroke="url(#silverHighlight)" stroke-width="3"/>
+                <path class="animate-wave-shimmer-delayed" d="M-60 280 C250 350, 380 575, 730 615 C1030 650, 1250 560, 1500 660" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+                <path d="M-40 390 C210 445, 360 640, 680 655 C940 668, 1150 610, 1480 740" stroke="#8C8A82" stroke-opacity="0.22" stroke-width="1.5"/>
+            </g>
+        </svg>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+            
+            <!-- Linke Hero-Spalte: Typografie & Call-to-Actions -->
+            <div class="lg:col-span-7 space-y-7">
+                <!-- Originales Full-Logo + "Vincent & Jesse" direkt darunter (wie auf der Visitenkarte) -->
+                <div class="inline-flex flex-col items-start">
+                    <svg class="w-32 sm:w-36 h-auto text-ink" viewBox="0 0 304 323" fill="currentColor" fill-rule="evenodd" xmlns="http://www.w3.org/2000/svg" aria-label="vinje Logo">
+                        <path d="M 227.50 275.50 Q 227.00 276.00 227.00 281.50 Q 227.00 287.00 228.50 290.50 Q 230.00 294.00 231.50 295.50 Q 233.00 297.00 233.00 297.50 Q 233.00 298.00 233.50 298.00 Q 234.00 298.00 235.50 299.50 Q 237.00 301.00 239.00 302.00 Q 241.00 303.00 243.00 303.00 Q 245.00 303.00 245.50 303.50 Q 246.00 304.00 265.00 304.00 Q 284.00 304.00 284.50 303.50 Q 285.00 303.00 288.00 302.50 Q 291.00 302.00 293.50 300.00 Q 296.00 298.00 296.00 297.50 Q 296.00 297.00 298.00 294.50 Q 300.00 292.00 294.50 292.00 Q 289.00 292.00 287.00 293.00 Q 285.00 294.00 265.50 294.00 Q 246.00 294.00 244.00 293.00 Q 242.00 292.00 241.00 291.00 Q 240.00 290.00 239.50 289.00 Q 239.00 288.00 239.50 287.50 Q 240.00 287.00 270.50 287.00 Q 301.00 287.00 302.00 285.00 Q 303.00 283.00 303.00 278.50 Q 303.00 274.00 302.50 273.50 Q 302.00 273.00 301.50 271.00 Q 301.00 269.00 298.50 266.50 Q 296.00 264.00 293.00 262.50 Q 290.00 261.00 266.00 261.00 Q 242.00 261.00 238.00 263.00 Q 234.00 265.00 231.50 268.00 Q 229.00 271.00 228.50 273.00 Q 228.00 275.00 227.50 275.50 Z M 238.50 278.50 Q 238.00 278.00 240.00 275.50 Q 242.00 273.00 245.00 271.50 Q 248.00 270.00 257.00 270.00 Q 266.00 270.00 266.50 270.50 Q 267.00 271.00 273.50 271.00 Q 280.00 271.00 280.50 270.50 Q 281.00 270.00 282.00 270.00 Q 283.00 270.00 283.50 270.50 Q 284.00 271.00 285.50 271.00 Q 287.00 271.00 289.50 273.50 Q 292.00 276.00 292.00 277.00 Q 292.00 278.00 291.50 278.50 Q 291.00 279.00 265.00 279.00 Q 239.00 279.00 238.50 278.50 Z M 120.00 266.50 Q 117.00 270.00 117.00 271.50 Q 117.00 273.00 116.50 273.50 Q 116.00 274.00 116.00 288.50 Q 116.00 303.00 116.50 303.50 Q 117.00 304.00 121.50 304.00 Q 126.00 304.00 126.50 303.50 Q 127.00 303.00 127.00 290.00 Q 127.00 277.00 129.50 274.00 Q 132.00 271.00 133.00 271.00 Q 134.00 271.00 134.50 270.50 Q 135.00 270.00 152.50 270.00 Q 170.00 270.00 170.50 270.50 Q 171.00 271.00 172.00 271.00 Q 173.00 271.00 175.50 274.00 Q 178.00 277.00 178.00 290.00 Q 178.00 303.00 178.50 303.50 Q 179.00 304.00 183.50 304.00 Q 188.00 304.00 188.50 303.50 Q 189.00 303.00 189.00 288.50 Q 189.00 274.00 187.00 270.00 Q 185.00 266.00 181.00 263.50 Q 177.00 261.00 152.00 261.00 Q 127.00 261.00 125.00 262.00 Q 123.00 263.00 120.00 266.50 Z M 97.00 261.00 Q 92.00 261.00 92.00 282.50 Q 92.00 304.00 97.00 304.00 Q 102.00 304.00 102.50 303.50 Q 103.00 303.00 102.50 302.50 Q 102.00 302.00 102.00 293.00 Q 102.00 284.00 102.50 283.50 Q 103.00 283.00 103.00 275.50 Q 103.00 268.00 102.50 267.50 Q 102.00 267.00 102.00 264.00 Q 102.00 261.00 97.00 261.00 Z M 213.50 260.50 Q 213.00 260.00 212.50 260.50 Q 212.00 261.00 208.00 261.00 Q 204.00 261.00 204.00 264.00 Q 204.00 267.00 203.50 267.50 Q 203.00 268.00 203.00 285.00 Q 203.00 302.00 202.00 304.00 Q 201.00 306.00 199.50 307.50 Q 198.00 309.00 194.50 310.50 Q 191.00 312.00 188.00 312.00 Q 185.00 312.00 184.00 313.00 Q 183.00 314.00 183.00 318.00 Q 183.00 322.00 188.00 322.00 Q 193.00 322.00 193.50 321.50 Q 194.00 321.00 196.00 321.00 Q 198.00 321.00 198.50 320.50 Q 199.00 320.00 200.00 320.00 Q 201.00 320.00 203.00 319.00 Q 205.00 318.00 208.00 315.00 Q 211.00 312.00 212.00 310.00 Q 213.00 308.00 213.00 307.00 Q 213.00 306.00 213.50 305.50 Q 214.00 305.00 214.00 283.00 Q 214.00 261.00 213.50 260.50 Z M 79.00 265.50 Q 83.00 261.00 82.50 260.50 Q 82.00 260.00 81.50 260.50 Q 81.00 261.00 75.00 261.00 Q 69.00 261.00 55.50 277.00 Q 42.00 293.00 41.50 293.00 Q 41.00 293.00 39.00 291.00 Q 37.00 289.00 37.00 288.50 Q 37.00 288.00 33.50 284.50 Q 30.00 281.00 30.00 280.50 Q 30.00 280.00 21.50 270.50 Q 13.00 261.00 6.50 261.00 Q 0.00 261.00 0.00 261.50 Q 0.00 262.00 3.00 265.00 Q 6.00 268.00 6.00 268.50 Q 6.00 269.00 8.50 271.50 Q 11.00 274.00 11.00 274.50 Q 11.00 275.00 13.00 277.00 Q 15.00 279.00 15.00 279.50 Q 15.00 280.00 18.50 283.50 Q 22.00 287.00 22.00 287.50 Q 22.00 288.00 24.50 290.50 Q 27.00 293.00 27.00 293.50 Q 27.00 294.00 30.00 297.50 Q 33.00 301.00 36.00 302.50 Q 39.00 304.00 41.00 304.00 Q 43.00 304.00 43.50 303.50 Q 44.00 303.00 46.00 302.50 Q 48.00 302.00 50.00 300.00 Q 52.00 298.00 52.00 297.50 Q 52.00 297.00 54.50 294.50 Q 57.00 292.00 57.00 291.50 Q 57.00 291.00 60.00 288.00 Q 63.00 285.00 63.00 284.50 Q 63.00 284.00 66.00 281.00 Q 69.00 278.00 69.00 277.50 Q 69.00 277.00 72.00 274.00 Q 75.00 271.00 75.00 270.50 Q 75.00 270.00 79.00 265.50 Z M 214.00 249.50 Q 214.00 246.00 213.50 245.50 Q 213.00 245.00 209.00 245.50 Q 205.00 246.00 204.00 247.50 Q 203.00 249.00 203.00 251.50 Q 203.00 254.00 203.50 254.50 Q 204.00 255.00 208.00 255.00 Q 212.00 255.00 213.00 254.00 Q 214.00 253.00 214.00 249.50 Z M 102.00 249.00 Q 102.00 245.00 99.00 245.00 Q 96.00 245.00 95.50 245.50 Q 95.00 246.00 94.00 246.00 Q 93.00 246.00 92.50 246.50 Q 92.00 247.00 92.00 251.00 Q 92.00 255.00 96.00 255.00 Q 100.00 255.00 101.00 254.00 Q 102.00 253.00 102.00 249.00 Z M 217.50 131.00 Q 221.00 129.00 220.00 129.50 Q 219.00 130.00 216.50 130.00 Q 214.00 130.00 213.50 130.50 Q 213.00 131.00 211.00 131.00 Q 209.00 131.00 208.50 131.50 Q 208.00 132.00 204.50 132.50 Q 201.00 133.00 200.50 133.50 Q 200.00 134.00 197.50 134.50 Q 195.00 135.00 189.00 138.00 Q 183.00 141.00 182.00 142.00 Q 181.00 143.00 179.00 144.00 Q 177.00 145.00 175.00 147.00 Q 173.00 149.00 172.50 149.00 Q 172.00 149.00 166.50 155.00 Q 161.00 161.00 160.50 162.50 Q 160.00 164.00 159.00 165.00 Q 158.00 166.00 156.50 169.00 Q 155.00 172.00 155.00 173.00 Q 155.00 174.00 153.50 177.50 Q 152.00 181.00 152.00 183.50 Q 152.00 186.00 151.50 186.50 Q 151.00 187.00 151.00 207.00 Q 151.00 227.00 154.00 224.50 Q 157.00 222.00 157.50 222.00 Q 158.00 222.00 162.50 217.50 Q 167.00 213.00 167.00 212.50 Q 167.00 212.00 169.00 210.00 Q 171.00 208.00 171.00 207.50 Q 171.00 207.00 173.00 204.50 Q 175.00 202.00 179.50 193.00 Q 184.00 184.00 184.00 183.00 Q 184.00 182.00 185.00 180.50 Q 186.00 179.00 186.00 178.00 Q 186.00 177.00 187.00 175.50 Q 188.00 174.00 189.00 170.50 Q 190.00 167.00 194.00 159.00 Q 198.00 151.00 199.00 150.00 Q 200.00 149.00 201.00 147.00 Q 202.00 145.00 208.00 139.00 Q 214.00 133.00 217.50 131.00 Z M 30.50 104.50 Q 28.00 107.00 27.50 108.00 Q 27.00 109.00 28.00 110.00 Q 29.00 111.00 35.00 114.50 Q 41.00 118.00 42.00 118.00 Q 43.00 118.00 45.50 119.50 Q 48.00 121.00 52.00 122.00 Q 56.00 123.00 57.50 124.00 Q 59.00 125.00 62.00 125.50 Q 65.00 126.00 65.50 126.50 Q 66.00 127.00 70.00 128.00 Q 74.00 129.00 75.50 130.00 Q 77.00 131.00 81.00 132.00 Q 85.00 133.00 86.50 134.00 Q 88.00 135.00 89.00 135.00 Q 90.00 135.00 96.00 138.00 Q 102.00 141.00 103.00 142.00 Q 104.00 143.00 107.50 145.00 Q 111.00 147.00 113.00 149.00 Q 115.00 151.00 115.50 151.00 Q 116.00 151.00 124.50 160.00 Q 133.00 169.00 133.00 169.50 Q 133.00 170.00 135.00 172.50 Q 137.00 175.00 140.50 182.00 Q 144.00 189.00 144.00 190.00 Q 144.00 191.00 144.00 180.50 Q 144.00 170.00 143.50 169.50 Q 143.00 169.00 142.50 163.50 Q 142.00 158.00 141.50 157.50 Q 141.00 157.00 140.50 154.00 Q 140.00 151.00 139.00 149.50 Q 138.00 148.00 137.50 145.50 Q 137.00 143.00 135.00 139.00 Q 133.00 135.00 132.00 134.00 Q 131.00 133.00 130.50 131.50 Q 130.00 130.00 127.50 127.00 Q 125.00 124.00 125.00 123.50 Q 125.00 123.00 118.50 116.50 Q 112.00 110.00 111.50 110.00 Q 111.00 110.00 109.50 108.50 Q 108.00 107.00 100.00 102.50 Q 92.00 98.00 91.00 98.00 Q 90.00 98.00 88.00 97.00 Q 86.00 96.00 84.50 96.00 Q 83.00 96.00 82.50 95.50 Q 82.00 95.00 80.50 95.00 Q 79.00 95.00 78.50 94.50 Q 78.00 94.00 73.50 94.00 Q 69.00 94.00 68.50 93.50 Q 68.00 93.00 61.00 93.50 Q 54.00 94.00 53.50 94.50 Q 53.00 95.00 51.00 95.00 Q 49.00 95.00 48.50 95.50 Q 48.00 96.00 44.00 97.00 Q 40.00 98.00 36.50 100.00 Q 33.00 102.00 30.50 104.50 Z M 157.50 33.00 Q 157.00 31.00 157.50 42.00 Q 158.00 53.00 158.50 53.50 Q 159.00 54.00 159.00 56.50 Q 159.00 59.00 159.50 59.50 Q 160.00 60.00 160.50 63.50 Q 161.00 67.00 162.50 70.00 Q 164.00 73.00 164.00 74.00 Q 164.00 75.00 166.50 80.00 Q 169.00 85.00 172.50 89.50 Q 176.00 94.00 176.00 94.50 Q 176.00 95.00 183.50 102.00 Q 191.00 109.00 191.50 109.00 Q 192.00 109.00 194.50 111.00 Q 197.00 113.00 203.00 116.00 Q 209.00 119.00 210.00 119.00 Q 211.00 119.00 212.50 120.00 Q 214.00 121.00 215.50 121.00 Q 217.00 121.00 219.00 122.00 Q 221.00 123.00 223.00 123.00 Q 225.00 123.00 225.50 123.50 Q 226.00 124.00 238.00 124.00 Q 250.00 124.00 250.50 123.50 Q 251.00 123.00 252.50 123.00 Q 254.00 123.00 254.50 122.50 Q 255.00 122.00 256.50 122.00 Q 258.00 122.00 259.50 121.00 Q 261.00 120.00 262.00 120.00 Q 263.00 120.00 268.00 116.50 Q 273.00 113.00 274.00 111.00 Q 275.00 109.00 274.50 108.00 Q 274.00 107.00 271.50 104.50 Q 269.00 102.00 263.50 99.00 Q 258.00 96.00 257.00 96.00 Q 256.00 96.00 255.50 95.50 Q 255.00 95.00 254.00 95.00 Q 253.00 95.00 249.50 93.50 Q 246.00 92.00 244.50 92.00 Q 243.00 92.00 242.50 91.50 Q 242.00 91.00 240.50 91.00 Q 239.00 91.00 238.50 90.50 Q 238.00 90.00 236.00 90.00 Q 234.00 90.00 233.50 89.50 Q 233.00 89.00 231.50 89.00 Q 230.00 89.00 229.50 88.50 Q 229.00 88.00 227.00 88.00 Q 225.00 88.00 224.50 87.50 Q 224.00 87.00 222.50 87.00 Q 221.00 87.00 220.50 86.50 Q 220.00 86.00 218.50 86.00 Q 217.00 86.00 216.50 85.50 Q 216.00 85.00 212.00 84.00 Q 208.00 83.00 200.50 79.50 Q 193.00 76.00 192.00 75.00 Q 191.00 74.00 189.00 73.00 Q 187.00 72.00 185.50 70.50 Q 184.00 69.00 183.50 69.00 Q 183.00 69.00 175.50 61.00 Q 168.00 53.00 168.00 52.50 Q 168.00 52.00 166.00 49.50 Q 164.00 47.00 161.00 41.00 Q 158.00 35.00 157.50 33.00 Z M 150.50 0.50 Q 151.00 0.00 150.00 0.00 Q 149.00 0.00 147.50 1.50 Q 146.00 3.00 145.50 3.00 Q 145.00 3.00 139.50 8.50 Q 134.00 14.00 134.00 14.50 Q 134.00 15.00 131.00 18.50 Q 128.00 22.00 125.50 27.00 Q 123.00 32.00 122.00 33.00 Q 121.00 34.00 121.00 35.00 Q 121.00 36.00 120.00 37.00 Q 119.00 38.00 119.00 39.00 Q 119.00 40.00 116.50 44.50 Q 114.00 49.00 114.00 50.00 Q 114.00 51.00 113.00 52.00 Q 112.00 53.00 112.00 54.00 Q 112.00 55.00 111.00 57.00 Q 110.00 59.00 109.00 60.00 Q 108.00 61.00 107.00 63.50 Q 106.00 66.00 104.50 67.50 Q 103.00 69.00 103.00 69.50 Q 103.00 70.00 98.50 75.00 Q 94.00 80.00 93.50 80.00 Q 93.00 80.00 91.00 82.00 Q 89.00 84.00 85.50 86.00 Q 82.00 88.00 82.50 87.50 Q 83.00 87.00 89.50 86.50 Q 96.00 86.00 96.50 85.50 Q 97.00 85.00 100.50 84.50 Q 104.00 84.00 104.50 83.50 Q 105.00 83.00 107.50 82.50 Q 110.00 82.00 111.50 81.00 Q 113.00 80.00 114.00 80.00 Q 115.00 80.00 121.00 77.00 Q 127.00 74.00 131.50 70.00 Q 136.00 66.00 136.50 66.00 Q 137.00 66.00 140.00 62.50 Q 143.00 59.00 145.50 54.50 Q 148.00 50.00 148.00 49.00 Q 148.00 48.00 149.00 46.00 Q 150.00 44.00 150.00 34.00 Q 150.00 24.00 150.50 23.50 Q 151.00 23.00 151.00 19.00 Q 151.00 15.00 150.50 14.50 Q 150.00 14.00 150.00 9.00 Q 150.00 4.00 150.50 3.50 Q 151.00 3.00 150.50 2.00 Q 150.00 1.00 150.50 0.50 Z"/>
+                    </svg>
+                    <span class="text-sm sm:text-base font-medium text-ink tracking-tight mt-1">Vincent &amp; Jesse</span>
+                </div>
+
+                <!-- Hauptüberschrift (H1) -->
+                <h1 class="font-display text-4xl sm:text-5xl lg:text-[3.65rem] font-semibold tracking-tight text-ink leading-[1.08]">
+                    Daten. Insights.<br>
+                    <span class="text-inkMuted font-normal">Automatisierung.</span>
+                </h1>
+
+                <!-- Subheadline -->
+                <p class="text-base sm:text-lg text-inkMuted max-w-xl leading-relaxed font-normal">
+                    Für den <strong>Mittelstand und E-Commerce</strong>: Mit unserem KI-E-Mail-Client <strong>backmail</strong> und unserem Voice Assistant <strong>backcall</strong> automatisieren wir eure Kundenkommunikation – ergänzt durch individuelle KI-Systeme, Forecasting-Modelle und Datenpipelines.
+                </p>
+
+                <!-- Zwei Buttons -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+                    <button type="button" data-calendly-open class="inline-flex justify-center items-center gap-2.5 px-6 py-3.5 rounded-full bg-ink text-paper text-sm font-medium hover:bg-ink/85 transition-all shadow-sm cursor-pointer">
+                        <span>Erstgespräch vereinbaren</span>
+                        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                            <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <a href="#leistungen" class="inline-flex justify-center items-center gap-2 px-6 py-3.5 rounded-full bg-white/70 border border-ink/20 text-ink text-sm font-medium hover:border-ink hover:bg-white transition-all">
+                        <span>Leistungen entdecken</span>
+                    </a>
+                </div>
+
+                <!-- Dezente Vertrauens-Leiste -->
+                <div class="pt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-inkMuted">
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-ink" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        100 % DSGVO-konform (EU-Hoster &amp; Mistral LLMs)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-ink" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Fundierte Data-Science-Expertise statt Hype
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-ink" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Festpreis-Projekte ohne Stundensatz
+                    </span>
+                </div>
+            </div>
+
+            <!-- Rechte Hero-Spalte: Interaktives System-Architektur-Modul (ohne ausgedachte Dummy-Zahlen) -->
+            <div class="lg:col-span-5">
+                <div class="rounded-2xl bg-white/85 backdrop-blur-md border border-silverBorder p-5 sm:p-6 shadow-[0_20px_50px_-20px_rgba(24,24,24,0.12)]">
+                    <!-- Widget-Kopfzeile -->
+                    <div class="flex items-center justify-between pb-4 border-b border-silverBorder">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-ink" viewBox="27 0 249 228" fill="currentColor" fill-rule="evenodd" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M 217.50 131.00 Q 221.00 129.00 220.00 129.50 Q 219.00 130.00 216.50 130.00 Q 214.00 130.00 213.50 130.50 Q 213.00 131.00 211.00 131.00 Q 209.00 131.00 208.50 131.50 Q 208.00 132.00 204.50 132.50 Q 201.00 133.00 200.50 133.50 Q 200.00 134.00 197.50 134.50 Q 195.00 135.00 189.00 138.00 Q 183.00 141.00 182.00 142.00 Q 181.00 143.00 179.00 144.00 Q 177.00 145.00 175.00 147.00 Q 173.00 149.00 172.50 149.00 Q 172.00 149.00 166.50 155.00 Q 161.00 161.00 160.50 162.50 Q 160.00 164.00 159.00 165.00 Q 158.00 166.00 156.50 169.00 Q 155.00 172.00 155.00 173.00 Q 155.00 174.00 153.50 177.50 Q 152.00 181.00 152.00 183.50 Q 152.00 186.00 151.50 186.50 Q 151.00 187.00 151.00 207.00 Q 151.00 227.00 154.00 224.50 Q 157.00 222.00 157.50 222.00 Q 158.00 222.00 162.50 217.50 Q 167.00 213.00 167.00 212.50 Q 167.00 212.00 169.00 210.00 Q 171.00 208.00 171.00 207.50 Q 171.00 207.00 173.00 204.50 Q 175.00 202.00 179.50 193.00 Q 184.00 184.00 184.00 183.00 Q 184.00 182.00 185.00 180.50 Q 186.00 179.00 186.00 178.00 Q 186.00 177.00 187.00 175.50 Q 188.00 174.00 189.00 170.50 Q 190.00 167.00 194.00 159.00 Q 198.00 151.00 199.00 150.00 Q 200.00 149.00 201.00 147.00 Q 202.00 145.00 208.00 139.00 Q 214.00 133.00 217.50 131.00 Z M 30.50 104.50 Q 28.00 107.00 27.50 108.00 Q 27.00 109.00 28.00 110.00 Q 29.00 111.00 35.00 114.50 Q 41.00 118.00 42.00 118.00 Q 43.00 118.00 45.50 119.50 Q 48.00 121.00 52.00 122.00 Q 56.00 123.00 57.50 124.00 Q 59.00 125.00 62.00 125.50 Q 65.00 126.00 65.50 126.50 Q 66.00 127.00 70.00 128.00 Q 74.00 129.00 75.50 130.00 Q 77.00 131.00 81.00 132.00 Q 85.00 133.00 86.50 134.00 Q 88.00 135.00 89.00 135.00 Q 90.00 135.00 96.00 138.00 Q 102.00 141.00 103.00 142.00 Q 104.00 143.00 107.50 145.00 Q 111.00 147.00 113.00 149.00 Q 115.00 151.00 115.50 151.00 Q 116.00 151.00 124.50 160.00 Q 133.00 169.00 133.00 169.50 Q 133.00 170.00 135.00 172.50 Q 137.00 175.00 140.50 182.00 Q 144.00 189.00 144.00 190.00 Q 144.00 191.00 144.00 180.50 Q 144.00 170.00 143.50 169.50 Q 143.00 169.00 142.50 163.50 Q 142.00 158.00 141.50 157.50 Q 141.00 157.00 140.50 154.00 Q 140.00 151.00 139.00 149.50 Q 138.00 148.00 137.50 145.50 Q 137.00 143.00 135.00 139.00 Q 133.00 135.00 132.00 134.00 Q 131.00 133.00 130.50 131.50 Q 130.00 130.00 127.50 127.00 Q 125.00 124.00 125.00 123.50 Q 125.00 123.00 118.50 116.50 Q 112.00 110.00 111.50 110.00 Q 111.00 110.00 109.50 108.50 Q 108.00 107.00 100.00 102.50 Q 92.00 98.00 91.00 98.00 Q 90.00 98.00 88.00 97.00 Q 86.00 96.00 84.50 96.00 Q 83.00 96.00 82.50 95.50 Q 82.00 95.00 80.50 95.00 Q 79.00 95.00 78.50 94.50 Q 78.00 94.00 73.50 94.00 Q 69.00 94.00 68.50 93.50 Q 68.00 93.00 61.00 93.50 Q 54.00 94.00 53.50 94.50 Q 53.00 95.00 51.00 95.00 Q 49.00 95.00 48.50 95.50 Q 48.00 96.00 44.00 97.00 Q 40.00 98.00 36.50 100.00 Q 33.00 102.00 30.50 104.50 Z M 157.50 33.00 Q 157.00 31.00 157.50 42.00 Q 158.00 53.00 158.50 53.50 Q 159.00 54.00 159.00 56.50 Q 159.00 59.00 159.50 59.50 Q 160.00 60.00 160.50 63.50 Q 161.00 67.00 162.50 70.00 Q 164.00 73.00 164.00 74.00 Q 164.00 75.00 166.50 80.00 Q 169.00 85.00 172.50 89.50 Q 176.00 94.00 176.00 94.50 Q 176.00 95.00 183.50 102.00 Q 191.00 109.00 191.50 109.00 Q 192.00 109.00 194.50 111.00 Q 197.00 113.00 203.00 116.00 Q 209.00 119.00 210.00 119.00 Q 211.00 119.00 212.50 120.00 Q 214.00 121.00 215.50 121.00 Q 217.00 121.00 219.00 122.00 Q 221.00 123.00 223.00 123.00 Q 225.00 123.00 225.50 123.50 Q 226.00 124.00 238.00 124.00 Q 250.00 124.00 250.50 123.50 Q 251.00 123.00 252.50 123.00 Q 254.00 123.00 254.50 122.50 Q 255.00 122.00 256.50 122.00 Q 258.00 122.00 259.50 121.00 Q 261.00 120.00 262.00 120.00 Q 263.00 120.00 268.00 116.50 Q 273.00 113.00 274.00 111.00 Q 275.00 109.00 274.50 108.00 Q 274.00 107.00 271.50 104.50 Q 269.00 102.00 263.50 99.00 Q 258.00 96.00 257.00 96.00 Q 256.00 96.00 255.50 95.50 Q 255.00 95.00 254.00 95.00 Q 253.00 95.00 249.50 93.50 Q 246.00 92.00 244.50 92.00 Q 243.00 92.00 242.50 91.50 Q 242.00 91.00 240.50 91.00 Q 239.00 91.00 238.50 90.50 Q 238.00 90.00 236.00 90.00 Q 234.00 90.00 233.50 89.50 Q 233.00 89.00 231.50 89.00 Q 230.00 89.00 229.50 88.50 Q 229.00 88.00 227.00 88.00 Q 225.00 88.00 224.50 87.50 Q 224.00 87.00 222.50 87.00 Q 221.00 87.00 220.50 86.50 Q 220.00 86.00 218.50 86.00 Q 217.00 86.00 216.50 85.50 Q 216.00 85.00 212.00 84.00 Q 208.00 83.00 200.50 79.50 Q 193.00 76.00 192.00 75.00 Q 191.00 74.00 189.00 73.00 Q 187.00 72.00 185.50 70.50 Q 184.00 69.00 183.50 69.00 Q 183.00 69.00 175.50 61.00 Q 168.00 53.00 168.00 52.50 Q 168.00 52.00 166.00 49.50 Q 164.00 47.00 161.00 41.00 Q 158.00 35.00 157.50 33.00 Z M 150.50 0.50 Q 151.00 0.00 150.00 0.00 Q 149.00 0.00 147.50 1.50 Q 146.00 3.00 145.50 3.00 Q 145.00 3.00 139.50 8.50 Q 134.00 14.00 134.00 14.50 Q 134.00 15.00 131.00 18.50 Q 128.00 22.00 125.50 27.00 Q 123.00 32.00 122.00 33.00 Q 121.00 34.00 121.00 35.00 Q 121.00 36.00 120.00 37.00 Q 119.00 38.00 119.00 39.00 Q 119.00 40.00 116.50 44.50 Q 114.00 49.00 114.00 50.00 Q 114.00 51.00 113.00 52.00 Q 112.00 53.00 112.00 54.00 Q 112.00 55.00 111.00 57.00 Q 110.00 59.00 109.00 60.00 Q 108.00 61.00 107.00 63.50 Q 106.00 66.00 104.50 67.50 Q 103.00 69.00 103.00 69.50 Q 103.00 70.00 98.50 75.00 Q 94.00 80.00 93.50 80.00 Q 93.00 80.00 91.00 82.00 Q 89.00 84.00 85.50 86.00 Q 82.00 88.00 82.50 87.50 Q 83.00 87.00 89.50 86.50 Q 96.00 86.00 96.50 85.50 Q 97.00 85.00 100.50 84.50 Q 104.00 84.00 104.50 83.50 Q 105.00 83.00 107.50 82.50 Q 110.00 82.00 111.50 81.00 Q 113.00 80.00 114.00 80.00 Q 115.00 80.00 121.00 77.00 Q 127.00 74.00 131.50 70.00 Q 136.00 66.00 136.50 66.00 Q 137.00 66.00 140.00 62.50 Q 143.00 59.00 145.50 54.50 Q 148.00 50.00 148.00 49.00 Q 148.00 48.00 149.00 46.00 Q 150.00 44.00 150.00 34.00 Q 150.00 24.00 150.50 23.50 Q 151.00 23.00 151.00 19.00 Q 151.00 15.00 150.50 14.50 Q 150.00 14.00 150.00 9.00 Q 150.00 4.00 150.50 3.50 Q 151.00 3.00 150.50 2.00 Q 150.00 1.00 150.50 0.50 Z"/>
+                            </svg>
+                            <span class="text-xs font-semibold tracking-wider uppercase text-ink">vinje // System-Architektur</span>
+                        </div>
+                        <span class="text-[11px] font-mono text-inkMuted bg-paper px-2 py-0.5 rounded-md border border-silverBorder">PYTHON &amp; AI</span>
+                    </div>
+
+                    <!-- Umschalter-Tabs (in eurer Prioritäts-Reihenfolge) -->
+                    <div class="grid grid-cols-3 gap-1.5 p-1 mt-4 rounded-xl bg-paper border border-silverBorder" role="tablist" aria-label="Architektur-Modus wählen">
+                        <button type="button" data-pipeline="ki" class="pipeline-tab active py-2 px-2 rounded-lg text-xs font-medium bg-ink text-paper transition-all cursor-pointer">
+                            KI-Automation
+                        </button>
+                        <button type="button" data-pipeline="ml" class="pipeline-tab py-2 px-2 rounded-lg text-xs font-medium text-inkMuted hover:text-ink transition-all cursor-pointer">
+                            Machine Learning
+                        </button>
+                        <button type="button" data-pipeline="analyse" class="pipeline-tab py-2 px-2 rounded-lg text-xs font-medium text-inkMuted hover:text-ink transition-all cursor-pointer">
+                            Daten &amp; BI
+                        </button>
+                    </div>
+
+                    <!-- Dynamischer Pipeline-Inhalt -->
+                    <div id="pipeline-content" class="mt-5 space-y-4 pipeline-fade">
+                        <!-- Schritt 1: Input -->
+                        <div class="p-3.5 rounded-xl bg-paper/90 border border-silverBorder flex items-start justify-between gap-3">
+                            <div>
+                                <span class="text-[10px] font-mono uppercase tracking-wider text-inkMuted">01 // Kanal &amp; Daten-Input</span>
+                                <p id="pipe-input-title" class="text-sm font-medium text-ink mt-0.5">Kunden-E-Mails, Anrufe &amp; Support-Anfragen</p>
+                                <p id="pipe-input-desc" class="text-xs text-inkMuted mt-0.5">Wiederkehrende Kommunikation im Mittelstand &amp; E-Commerce</p>
+                            </div>
+                            <span class="text-xs font-mono px-2 py-1 rounded bg-white border border-silverBorder text-ink">INPUT</span>
+                        </div>
+
+                        <!-- Verbindungspfeil -->
+                        <div class="flex justify-center -my-1">
+                            <div class="w-6 h-6 rounded-full bg-paper border border-silverBorder flex items-center justify-center text-ink">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 3V13M8 13L4.5 9.5M8 13L11.5 9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Schritt 2: Verarbeitung -->
+                        <div class="p-3.5 rounded-xl bg-paper/90 border border-silverBorder flex items-start justify-between gap-3">
+                            <div>
+                                <span class="text-[10px] font-mono uppercase tracking-wider text-inkMuted">02 // vinje Engine</span>
+                                <p id="pipe-process-title" class="text-sm font-medium text-ink mt-0.5">backmail, backcall &amp; Multi-Agenten</p>
+                                <p id="pipe-process-desc" class="text-xs text-inkMuted mt-0.5">Mistral &amp; lokale LLMs auf europäischen Servern</p>
+                            </div>
+                            <span class="text-xs font-mono px-2 py-1 rounded bg-ink text-paper">EU-CORE</span>
+                        </div>
+
+                        <!-- Schritt 3: Konkretes System-Ergebnis (ohne erfundene Prozentzahlen) -->
+                        <div class="p-4 rounded-xl bg-ink text-paper space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-mono uppercase tracking-wider text-paper/70">03 // Produktives System</span>
+                                <span id="pipe-badge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/15 text-paper">Kundensystem</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 pt-1">
+                                <div class="p-2.5 rounded-lg bg-white/10">
+                                    <div id="pipe-metric-1" class="font-display text-sm font-semibold tracking-tight">backmail</div>
+                                    <div id="pipe-label-1" class="text-[11px] text-paper/75 mt-0.5">KI-E-Mail-Client &amp; Auto-Antworten</div>
+                                </div>
+                                <div class="p-2.5 rounded-lg bg-white/10">
+                                    <div id="pipe-metric-2" class="font-display text-sm font-semibold tracking-tight">backcall</div>
+                                    <div id="pipe-label-2" class="text-[11px] text-paper/75 mt-0.5">KI-Voice-Assistant für Telefonanrufe</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    const pipelineData: Record<string, {
+        inputTitle: string;
+        inputDesc: string;
+        processTitle: string;
+        processDesc: string;
+        badge: string;
+        metric1: string;
+        label1: string;
+        metric2: string;
+        label2: string;
+    }> = {
+        ki: {
+            inputTitle: 'Kunden-E-Mails, Anrufe & Support-Anfragen',
+            inputDesc: 'Wiederkehrende Kommunikation im Mittelstand & E-Commerce',
+            processTitle: 'backmail, backcall & Multi-Agenten',
+            processDesc: 'Mistral & lokale LLMs auf europäischen Servern',
+            badge: 'DSGVO-konform',
+            metric1: 'backmail',
+            label1: 'KI-E-Mail-Client & Auto-Antworten',
+            metric2: 'backcall',
+            label2: 'KI-Voice-Assistant für Telefonanrufe'
+        },
+        ml: {
+            inputTitle: 'Bestellhistorie, Lager- & Prozessdaten',
+            inputDesc: 'Historische Zeitreihen & strukturierte Unternehmensdaten',
+            processTitle: 'Python-Pipelines & Forecasting-Modelle',
+            processDesc: 'Individuell trainierte Machine-Learning-Algorithmen',
+            badge: 'Data Science',
+            metric1: 'Forecasting',
+            label1: 'Absatz-, Nachfrage- & Bestandsprognosen',
+            metric2: 'Python & Docker',
+            label2: 'Sauber deployte, wartbare ML-Pipelines'
+        },
+        analyse: {
+            inputTitle: 'Verteilte Shop-, ERP- & SQL-Datenquellen',
+            inputDesc: 'Unübersichtliche Tabellen & getrennte Datentöpfe',
+            processTitle: 'SQL-Modellierung, Supabase & Python-ETL',
+            processDesc: 'Automatisierte Aufbereitung & Strukturierung',
+            badge: 'Analytics & Tools',
+            metric1: 'Live-Dashboards',
+            label1: 'Alle Kennzahlen an einem Ort',
+            metric2: 'Custom Web-Tools',
+            label2: 'Maßgeschneiderte interne Anwendungen'
+        }
+    };
+
+    const tabs = document.querySelectorAll('.pipeline-tab');
+    const pipelineContent = document.getElementById('pipeline-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const key = tab.getAttribute('data-pipeline');
+            if (!key) return;
+            const data = pipelineData[key];
+            if (!data || !pipelineContent) return;
+
+            // Tab-Styles aktualisieren
+            tabs.forEach(t => {
+                t.classList.remove('bg-ink', 'text-paper');
+                t.classList.add('text-inkMuted');
+            });
+            tab.classList.add('bg-ink', 'text-paper');
+            tab.classList.remove('text-inkMuted');
+
+            // Animation neu triggern
+            pipelineContent.classList.remove('pipeline-fade');
+            void pipelineContent.offsetWidth; // Reflow erzwingen
+            pipelineContent.classList.add('pipeline-fade');
+
+            // Inhalte aktualisieren
+            const setText = (id: string, val: string) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+            setText('pipe-input-title', data.inputTitle);
+            setText('pipe-input-desc', data.inputDesc);
+            setText('pipe-process-title', data.processTitle);
+            setText('pipe-process-desc', data.processDesc);
+            setText('pipe-badge', data.badge);
+            setText('pipe-metric-1', data.metric1);
+            setText('pipe-label-1', data.label1);
+            setText('pipe-metric-2', data.metric2);
+            setText('pipe-label-2', data.label2);
+        });
+    });
+
+    // Fließende metallisch-silbrige Seidenwellen im Hero-Canvas
+    const canvas = document.getElementById('hero-wave-canvas') as HTMLCanvasElement | null;
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let width = 0;
+        let height = 0;
+        let time = 0;
+        let targetMouseX = 0.5;
+        let targetMouseY = 0.5;
+        let mouseX = 0.5;
+        let mouseY = 0.5;
+
+        const resize = () => {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            width = rect.width;
+            height = rect.height;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+
+        resize();
+        window.addEventListener('resize', resize);
+
+        window.addEventListener('mousemove', (e) => {
+            targetMouseX = e.clientX / Math.max(window.innerWidth, 1);
+            targetMouseY = e.clientY / Math.max(window.innerHeight, 1);
+        }, { passive: true });
+
+        const drawRibbon = (opts: {
+            yBase: number;
+            amp1: number;
+            amp2: number;
+            freq1: number;
+            freq2: number;
+            speed: number;
+            phase: number;
+            thickness: number;
+            strokeColor: string;
+            fillTop: string;
+            fillBottom: string;
+        }) => {
+            if (!ctx) return;
+            const steps = 64;
+            const parallaxY = (mouseY - 0.5) * 28;
+            const parallaxPhase = (mouseX - 0.5) * 0.8;
+
+            ctx.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const ratio = i / steps;
+                const x = ratio * width;
+                const wave =
+                    Math.sin(ratio * opts.freq1 + time * opts.speed + opts.phase + parallaxPhase) * opts.amp1 +
+                    Math.cos(ratio * opts.freq2 - time * (opts.speed * 0.7) + opts.phase) * opts.amp2;
+                const y = height * opts.yBase + wave + ratio * 110 - 55 + parallaxY;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+
+            // Sanfte metallische Füllebene unter der Welle
+            ctx.save();
+            ctx.lineTo(width, height + 40);
+            ctx.lineTo(0, height + 40);
+            ctx.closePath();
+            const grad = ctx.createLinearGradient(0, height * (opts.yBase - 0.2), width, height * (opts.yBase + 0.35));
+            grad.addColorStop(0, opts.fillTop);
+            grad.addColorStop(0.55, opts.fillBottom);
+            grad.addColorStop(1, 'rgba(247, 246, 242, 0)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.restore();
+
+            // Feine silbrige Glanzkante entlang des Wellenkamms
+            ctx.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const ratio = i / steps;
+                const x = ratio * width;
+                const wave =
+                    Math.sin(ratio * opts.freq1 + time * opts.speed + opts.phase + parallaxPhase) * opts.amp1 +
+                    Math.cos(ratio * opts.freq2 - time * (opts.speed * 0.7) + opts.phase) * opts.amp2;
+                const y = height * opts.yBase + wave + ratio * 110 - 55 + parallaxY;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = opts.strokeColor;
+            ctx.lineWidth = opts.thickness;
+            ctx.stroke();
+        };
+
+        const animate = () => {
+            if (!ctx) return;
+            time += 0.018;
+            mouseX += (targetMouseX - mouseX) * 0.04;
+            mouseY += (targetMouseY - mouseY) * 0.04;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Mehrere überlagerte Seidenwellen im Visitenkarten-Silberstil
+            drawRibbon({
+                yBase: 0.28,
+                amp1: 38,
+                amp2: 22,
+                freq1: 3.4,
+                freq2: 5.2,
+                speed: 0.9,
+                phase: 0.4,
+                thickness: 1.6,
+                strokeColor: 'rgba(255, 255, 255, 0.85)',
+                fillTop: 'rgba(255, 255, 255, 0.55)',
+                fillBottom: 'rgba(205, 203, 194, 0.22)',
+            });
+
+            drawRibbon({
+                yBase: 0.52,
+                amp1: 46,
+                amp2: 26,
+                freq1: 2.8,
+                freq2: 4.5,
+                speed: -0.75,
+                phase: 1.9,
+                thickness: 2.2,
+                strokeColor: 'rgba(180, 178, 168, 0.45)',
+                fillTop: 'rgba(223, 221, 213, 0.42)',
+                fillBottom: 'rgba(174, 172, 163, 0.16)',
+            });
+
+            drawRibbon({
+                yBase: 0.68,
+                amp1: 34,
+                amp2: 20,
+                freq1: 3.9,
+                freq2: 6.0,
+                speed: 1.1,
+                phase: 3.5,
+                thickness: 2.0,
+                strokeColor: 'rgba(255, 255, 255, 0.92)',
+                fillTop: 'rgba(255, 255, 255, 0.65)',
+                fillBottom: 'rgba(195, 193, 184, 0.25)',
+            });
+
+            requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
+    }
+</script>
