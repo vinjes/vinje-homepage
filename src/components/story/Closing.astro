@@ -1,0 +1,54 @@
+<section id="story-abschluss" class="border-b border-silverBorder" aria-labelledby="closing-title">
+    <div class="max-w-2xl mx-auto px-5 sm:px-8 py-28 sm:py-40 text-center">
+        <span class="text-xs font-mono uppercase tracking-widest text-inkMuted">Nächster Schritt</span>
+        <h2 id="closing-title" class="font-display text-3xl sm:text-5xl font-semibold tracking-tight text-ink mt-3 leading-[1.08]">
+            Wo verliert euer Team die meiste Zeit?
+        </h2>
+        <p class="text-base sm:text-lg text-inkMuted mt-5 leading-relaxed">
+            In 20 Minuten schauen wir gemeinsam auf eure Anfragen, Anrufe und Abläufe und sagen ehrlich, was sich automatisieren lässt und was nicht.
+        </p>
+        <button
+            type="button"
+            data-calendly-open
+            class="cta-pulse mt-10 inline-flex items-center gap-2.5 px-7 py-4 rounded-full bg-ink text-paper text-sm font-medium hover:bg-ink/85 transition-colors shadow-sm cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+        >
+            <span>Erstgespräch vereinbaren</span>
+            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
+    </div>
+</section>
+
+<script>
+    // Puls startet erst, wenn der Button sichtbar ist, und läuft nur dreimal
+    const btn = document.querySelector('.cta-pulse')!;
+    new IntersectionObserver(([e], obs) => {
+        if (!e.isIntersecting) return;
+        btn.classList.add('is-visible');
+        obs.disconnect();
+    }, { threshold: 1 }).observe(btn);
+</script>
+
+<style>
+    .cta-pulse { position: relative; }
+    .cta-pulse::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: 0 0 0 1px var(--color-ink);
+        opacity: 0;
+        pointer-events: none;
+    }
+    .cta-pulse.is-visible::after { animation: ctaPulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.4s 3; }
+
+    @keyframes ctaPulse {
+        from { transform: scale(1); opacity: 0.45; }
+        to { transform: scale(1.12, 1.45); opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .cta-pulse.is-visible::after { animation: none; }
+    }
+</style>

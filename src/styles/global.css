@@ -141,3 +141,17 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* Platzhalter für Kundennamen, Zahlen und Referenzen: gestrichelt unterstrichen, damit niemand sie für echte Angaben hält */
+.placeholder {
+    border-bottom: 1px dashed var(--color-silverAccent);
+    cursor: help;
+}
+
+/* Reduzierte Bewegung: keine Dauer-Animationen, Inhalte sofort im Endzustand */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .animate-wave-slow, .animate-wave-reverse, .animate-wave-shimmer, .animate-wave-shimmer-delayed,
+    .animate-silver-orb, .pipeline-fade { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+}

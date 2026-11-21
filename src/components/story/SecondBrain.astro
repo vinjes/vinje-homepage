@@ -1,0 +1,122 @@
+---
+import SecondBrainGraph from './SecondBrainGraph';
+import { NODES, neighbors, byId } from './secondBrain';
+---
+
+<section id="second-brain" class="brain relative border-b border-silverBorder" aria-labelledby="brain-title">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-24 lg:py-0 lg:pt-24 lg:pb-10 lg:h-screen lg:flex lg:flex-col">
+        <div class="brain-head max-w-2xl">
+            <span class="text-xs font-mono uppercase tracking-widest text-inkMuted">Second Brain</span>
+            <h2 id="brain-title" class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-ink mt-2">
+                Alles hängt zusammen. Jetzt sieht man es auch.
+            </h2>
+            <p class="text-sm text-inkMuted mt-3 leading-relaxed motion-reduce:hidden">
+                Klickt auf einen Knoten, um zu sehen, was er verbindet. Mit Tab und Enter geht es auch per Tastatur.
+            </p>
+        </div>
+
+        <div class="brain-graph relative mt-10 lg:mt-8 lg:flex-1 lg:min-h-0">
+            <SecondBrainGraph client:visible />
+        </div>
+
+        <!-- Gleicher Inhalt als Text: für Screenreader immer, bei reduzierter Bewegung auch sichtbar -->
+        <dl class="sr-only motion-reduce:not-sr-only motion-reduce:mt-10 motion-reduce:grid motion-reduce:sm:grid-cols-2 motion-reduce:gap-x-8 motion-reduce:gap-y-5 text-sm">
+            {NODES.map((n) => (
+                <div>
+                    <dt class="font-medium text-ink">{n.label}: {n.sample}</dt>
+                    <dd class="text-inkMuted mt-1 leading-relaxed">
+                        {n.detail} Verbunden mit {neighbors(n.id).map((id) => byId[id].label).join(', ')}.
+                    </dd>
+                </div>
+            ))}
+        </dl>
+    </div>
+</section>
+
+<script>
+    import { gsap, mm, DESKTOP, MOBILE } from '../../scripts/motion';
+
+    const section = document.querySelector<HTMLElement>('.brain')!;
+
+    // Übergang bis G14 (Aufbau aus den Knoten heraus): Netz blendet beim Scrollen ein
+    mm.add(DESKTOP, () => {
+        gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: '+=120%', pin: true, scrub: 1 } })
+            .from('.brain-graph', { opacity: 0, duration: 1 })
+            .to({}, { duration: 0.6 });
+    });
+
+    mm.add(MOBILE, () => {
+        gsap.from('.brain-graph', { opacity: 0, y: 24, duration: 0.8, scrollTrigger: { trigger: section, start: 'top 70%', once: true } });
+    });
+</script>
+
+<style is:global>
+    /* Statische Lage ohne JS: Prozent der Bühne. Mit JS (.is-live) setzt die Insel nur noch transform. */
+    .brain-node,
+    .brain-line {
+        position: absolute;
+        --px: var(--mx);
+        --py: var(--my);
+        --a: var(--mx1);
+        --b: var(--my1);
+        --c: var(--mx2);
+        --d: var(--my2);
+    }
+    @media (min-width: 1024px) {
+        .brain-node,
+        .brain-line {
+            --px: var(--x);
+            --py: var(--y);
+            --a: var(--x1);
+            --b: var(--y1);
+            --c: var(--x2);
+            --d: var(--y2);
+        }
+    }
+    .brain-node {
+        left: calc(var(--px) * 1%);
+        top: calc(var(--py) * 1%);
+        transform: translate(-50%, -50%);
+    }
+    .brain-line {
+        --dx: calc((var(--c) - var(--a)) * 1cqw);
+        --dy: calc((var(--d) - var(--b)) * 1cqh);
+        left: calc(var(--a) * 1%);
+        top: calc(var(--b) * 1%);
+        width: hypot(var(--dx), var(--dy));
+        height: 1px;
+        transform-origin: 0 50%;
+        transform: rotate(atan2(var(--dy), var(--dx)));
+        background: var(--color-silverAccent);
+        transition: background-color 0.3s;
+        animation: brainPulse 7s ease-in-out infinite;
+    }
+    .is-live .brain-node,
+    .is-live .brain-line {
+        left: 0;
+        top: 0;
+    }
+    .is-live .brain-line { width: 1px; }
+    .brain-line.is-lit { background: var(--color-ink); animation: none; opacity: 1; }
+    .brain-line.is-dim { animation: none; opacity: 0.2; }
+
+    /* Langsames Atmen der Verbindungen, nur Opacity */
+    @keyframes brainPulse {
+        0%, 100% { opacity: 0.45; }
+        50% { opacity: 1; }
+    }
+
+    /* Weicher Schein hinter dem Knoten */
+    .brain-glow {
+        position: absolute;
+        inset: -16px;
+        border-radius: 2rem;
+        background: radial-gradient(closest-side, rgba(200, 198, 190, 0.7), transparent);
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .brain-line { animation: none; }
+    }
+</style>

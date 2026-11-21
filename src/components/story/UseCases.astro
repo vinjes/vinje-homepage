@@ -1,0 +1,89 @@
+---
+const cases = [
+    {
+        title: 'Fehlanrufe',
+        problem: 'Anrufer, die gar nicht zu euch wollen: die Pizza-Bestellung, die falsche Nummer, die Werbung. Jedes Mal unterbricht jemand seine Arbeit.',
+        tool: 'backcall',
+        solution: 'Der Voice-Assistent erkennt Fehlanrufe und leitet freundlich weiter oder beendet das Gespräch höflich. Das Telefon klingelt nur noch, wenn es um euch geht.',
+    },
+    {
+        title: 'Routine-Mails',
+        problem: 'Dieselben Fragen, jeden Tag: Lieferzeit, Öffnungszeiten, Stornierung. Das Postfach füllt sich schneller, als jemand antworten kann.',
+        tool: 'backmail',
+        solution: 'Wiederkehrende Kundenanfragen werden vorsortiert und beantwortet, bevor jemand sie liest. Was Fingerspitzengefühl braucht, landet oben im Postfach.',
+    },
+    {
+        title: 'Lange Telefonate',
+        problem: 'Standardfragen am Telefon dauern Minuten und blockieren die Leitung für die Gespräche, die wirklich zählen.',
+        tool: 'backcall',
+        solution: 'Standardanfragen laufen über den Voice-Assistenten. Das Team bekommt nur die Fälle, die es wirklich braucht.',
+    },
+    {
+        title: 'Vorhersagen statt Bauchgefühl',
+        problem: 'Bestellt wird nach Gefühl: mal zu viel im Lager, mal ausverkauft, wenn die Nachfrage kommt.',
+        tool: 'Forecasting',
+        solution: 'Absatz und Bestand werden mit Forecasting-Modellen geplant. Ihr seht vorher, was gebraucht wird.',
+    },
+];
+---
+
+<section id="leistungen" class="usecases group relative border-b border-silverBorder" aria-labelledby="usecases-title">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-24 lg:py-0 lg:pt-20 lg:pb-16 lg:min-h-screen lg:flex lg:flex-col lg:justify-center">
+        <div class="max-w-2xl">
+            <span class="text-xs font-mono uppercase tracking-widest text-inkMuted">Use Cases</span>
+            <h2 id="usecases-title" class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-ink mt-2">
+                Vier Probleme, die wir jeden Tag lösen.
+            </h2>
+        </div>
+
+        <ol class="uc-steps hidden group-[.is-pinned]:flex gap-6 mt-8 text-xs font-mono uppercase tracking-wider" aria-hidden="true">
+            {cases.map((c, i) => <li class="uc-step text-ink opacity-35">0{i + 1} {c.title}</li>)}
+        </ol>
+
+        <div class="relative mt-10 group-[.is-pinned]:h-[20rem] space-y-6 group-[.is-pinned]:space-y-0">
+            {cases.map((c, i) => (
+                <article class="uc-panel grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 group-[.is-pinned]:absolute group-[.is-pinned]:inset-x-0 group-[.is-pinned]:top-0" aria-labelledby={`uc-${i}`}>
+                    <div class="rounded-2xl border border-silverBorder bg-paperDark/60 p-7 sm:p-8">
+                        <span class="text-[11px] font-mono uppercase tracking-wider text-inkMuted">0{i + 1} · Problem</span>
+                        <h3 id={`uc-${i}`} class="font-display text-xl sm:text-2xl font-semibold tracking-tight text-ink mt-3">{c.title}</h3>
+                        <p class="text-base text-inkMuted mt-3 leading-relaxed">{c.problem}</p>
+                    </div>
+                    <div class="rounded-2xl border border-ink bg-white p-7 sm:p-8">
+                        <span class="text-[11px] font-mono uppercase tracking-wider text-inkMuted">Lösung · <span class="text-ink">{c.tool}</span></span>
+                        <p class="text-base text-ink mt-3 leading-relaxed">{c.solution}</p>
+                    </div>
+                </article>
+            ))}
+        </div>
+    </div>
+</section>
+
+<script>
+    import { gsap, mm, DESKTOP, MOBILE, revealOnce } from '../../scripts/motion';
+
+    const section = document.querySelector<HTMLElement>('.usecases')!;
+    const panels = gsap.utils.toArray<HTMLElement>('.uc-panel');
+    const steps = gsap.utils.toArray<HTMLElement>('.uc-step');
+
+    mm.add(DESKTOP, () => {
+        section.classList.add('is-pinned');
+        const tl = gsap.timeline({
+            scrollTrigger: { trigger: section, start: 'top top', end: `+=${panels.length * 70}%`, pin: true, scrub: 1 },
+        });
+
+        // Ein Effekt pro Panel: Einblenden beim Erreichen, das vorherige weicht.
+        // Panel 1 ist von Anfang an sichtbar, damit der Sprung über #leistungen nicht leer landet.
+        gsap.set(steps[0], { opacity: 1 });
+        panels.forEach((panel, i) => {
+            if (i > 0) {
+                tl.to(panels[i - 1], { opacity: 0, y: -24, duration: 0.4, ease: 'power2.in' }).to(steps[i - 1], { opacity: 0.35, duration: 0.4 }, '<')
+                    .fromTo(panel, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }).to(steps[i], { opacity: 1, duration: 0.4 }, '<');
+            }
+            tl.to({}, { duration: 0.6 }); // Haltezeit zum Lesen
+        });
+
+        return () => section.classList.remove('is-pinned');
+    });
+
+    mm.add(MOBILE, () => revealOnce(panels));
+</script>

@@ -1,0 +1,80 @@
+---
+const words = 'Aus vielen Kanälen wird ein Überblick.'.split(' ');
+---
+
+<section id="story-ordnung" class="ordnung relative border-b border-silverBorder" aria-labelledby="ordnung-title">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-24 lg:py-0 lg:pt-20 lg:pb-16 lg:min-h-screen flex flex-col items-center justify-center text-center">
+        <span class="text-xs font-mono uppercase tracking-widest text-inkMuted">Ordnung</span>
+        <h2 id="ordnung-title" class="font-display text-3xl sm:text-5xl font-semibold tracking-tight text-ink mt-3 leading-[1.08] max-w-2xl">
+            {words.map((w) => <><span class="ordnung-word inline-block">{w}</span>{' '}</>)}
+        </h2>
+
+        <div class="relative mt-12 w-full max-w-xl">
+            <!-- Kartenstapel aus der Chaos-Phase; nur sichtbar, während er in die Zusammenfassung läuft -->
+            {[-1, 1, -1, 1].map((dir, i) => (
+                <div
+                    class="ordnung-pile absolute inset-0 rounded-2xl border border-silverBorder bg-white/90 opacity-0"
+                    data-dir={dir}
+                    data-i={i}
+                    aria-hidden="true"
+                />
+            ))}
+
+            <div class="ordnung-card relative rounded-2xl border border-silverBorder bg-white p-6 sm:p-8 text-left shadow-[0_24px_60px_-30px_rgba(20,20,20,0.2)]">
+                <p class="text-[11px] font-mono uppercase tracking-wider text-inkMuted">
+                    Beispiel: ein Vormittag bei <span class="placeholder" title="Platzhalter">Ihr Unternehmen</span>
+                </p>
+                <p class="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-ink mt-3 tabular-nums">
+                    <span data-count="14">14</span> Mails · <span data-count="3">3</span> Anrufe · <span data-count="2">2</span> Termine
+                    <span class="block text-inkMuted font-normal mt-1">→ 1 Überblick</span>
+                </p>
+                <ul class="mt-6 border-t border-silverBorder divide-y divide-silverBorder text-sm">
+                    <li class="ordnung-row flex justify-between gap-4 py-3">
+                        <span class="text-inkMuted">Automatisch beantwortet</span>
+                        <span class="text-ink text-right">Öffnungszeiten, Bestellstatus, Parkplätze</span>
+                    </li>
+                    <li class="ordnung-row flex justify-between gap-4 py-3">
+                        <span class="text-inkMuted">Braucht euch</span>
+                        <span class="text-ink text-right">eine Beschwerde, ein Angebot für Mai</span>
+                    </li>
+                    <li class="ordnung-row flex justify-between gap-4 py-3">
+                        <span class="text-inkMuted">Im Kalender</span>
+                        <span class="text-ink text-right">zwei Termine, bestätigt</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    import { gsap, mm, DESKTOP, MOBILE, revealOnce, countUp, resetCounts } from '../../scripts/motion';
+
+    const section = document.querySelector<HTMLElement>('.ordnung')!;
+    const counts = section.querySelectorAll<HTMLElement>('[data-count]');
+
+    mm.add(DESKTOP, () => {
+        const tl = gsap.timeline({
+            scrollTrigger: { trigger: section, start: 'top top', end: '+=140%', pin: true, scrub: 1 },
+        });
+
+        // Stapel läuft zusammen, daraus entsteht die Zusammenfassung
+        tl.fromTo('.ordnung-pile',
+            { opacity: 1, scale: 0.4, x: (i, el) => Number(el.dataset.dir) * (140 + i * 50), y: (i) => 90 - i * 60, rotation: (_, el) => Number(el.dataset.dir) * 8 },
+            { opacity: 0, scale: 1, x: 0, y: 0, rotation: 0, stagger: 0.08, duration: 0.8, ease: 'power3.inOut' })
+            .from('.ordnung-card', { opacity: 0, scale: 0.92, duration: 0.6 }, '-=0.4')
+            // Text-Enthüllung: Wörter werden nacheinander dunkel
+            .from('.ordnung-word', { opacity: 0.12, y: 12, stagger: 0.08, duration: 0.5 }, 0);
+        tl.addLabel('count', '>-0.2');
+        counts.forEach((el) => tl.add(countUp(el), 'count'));
+        tl.from('.ordnung-row', { opacity: 0, y: 12, stagger: 0.12, duration: 0.5 }, '<');
+
+        return () => resetCounts(section);
+    });
+
+    mm.add(MOBILE, () => {
+        revealOnce(section.querySelectorAll('.ordnung-card'));
+        counts.forEach((el) => countUp(el, { delay: 0.3, scrollTrigger: { trigger: el, start: 'top 85%', once: true } }));
+        return () => resetCounts(section);
+    });
+</script>

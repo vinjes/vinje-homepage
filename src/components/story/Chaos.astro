@@ -1,0 +1,95 @@
+---
+import { ICONS } from './icons';
+
+// Positionen in % der Bühne (nur Desktop). depth: 0 = hinten/langsam, 2 = vorne/schnell. mobile: auf kleinen Screens sichtbar.
+const cards = [
+    { type: 'Mail', from: 'Hotelgast', time: '08:02', text: 'Ist am Sonntag ein später Check-out möglich?', x: 2, y: 7, depth: 0, mobile: true },
+    { type: 'Anruf', from: 'Unbekannte Nummer', time: '08:09', text: 'Habt ihr heute bis 22 Uhr geöffnet?', x: 40, y: 6, depth: 1, mobile: true },
+    { type: 'Mail', from: 'Shop-Kundin', time: '08:14', text: 'Wo bleibt meine Bestellung? Seit Dienstag keine Nachricht.', x: 76, y: 9, depth: 0, mobile: true },
+    { type: 'Nachricht', from: 'Eventagentur', time: '08:21', text: 'Ist der Saal am 14. Juni für 120 Gäste frei?', x: 20, y: 24, depth: 2, mobile: true },
+    { type: 'Mail', from: 'Beschwerde', time: '08:26', text: 'Paket kam beschädigt an. Was jetzt?', x: 58, y: 22, depth: 1, mobile: true },
+    { type: 'Anruf', from: 'Falsch verbunden', time: '08:33', text: 'Einmal Pizza Margherita, bitte.', x: 0, y: 53, depth: 1, mobile: true },
+    { type: 'Mail', from: 'Brautpaar', time: '08:40', text: 'Angebot für Mai, mit vegetarischem Menü?', x: 76, y: 51, depth: 2, mobile: false },
+    { type: 'Nachricht', from: 'Stammkunde', time: '08:47', text: 'Kann ich meinen Termin auf Donnerstag schieben?', x: 3, y: 74, depth: 2, mobile: false },
+    { type: 'Mail', from: 'Hotelgast', time: '08:55', text: 'Wie kann ich kostenlos stornieren?', x: 28, y: 76, depth: 0, mobile: false },
+    { type: 'Mail', from: 'Shop-Kunde', time: '09:03', text: 'Kann ich in Größe M umtauschen?', x: 55, y: 78, depth: 1, mobile: false },
+    { type: 'Nachricht', from: 'Gast', time: '09:11', text: 'Gibt es Parkplätze vor Ort?', x: 76, y: 72, depth: 0, mobile: false },
+] as const;
+---
+
+<section id="story-chaos" class="chaos relative border-b border-silverBorder" aria-labelledby="chaos-title">
+    <div class="chaos-stage relative flex flex-col lg:block max-w-6xl mx-auto px-5 sm:px-8 py-24 lg:py-0 lg:h-screen lg:overflow-hidden">
+        <div class="chaos-head relative z-10 max-w-xl mx-auto text-center lg:absolute lg:inset-x-0 lg:top-20 lg:bottom-0 lg:flex lg:flex-col lg:items-center lg:justify-center lg:pointer-events-none">
+            <span class="text-xs font-mono uppercase tracking-widest text-inkMuted">Ausgangslage</span>
+            <h2 id="chaos-title" class="font-display text-3xl sm:text-5xl font-semibold tracking-tight text-ink mt-3 leading-[1.08]">
+                Montag, 8 Uhr.<br><span class="text-inkMuted font-normal">Alles kommt gleichzeitig.</span>
+            </h2>
+            <p class="text-base text-inkMuted mt-5 leading-relaxed max-w-md mx-auto">
+                Mails, Anrufe, Nachrichten. Jede Anfrage ist schnell erledigt. Zusammen kosten sie den halben Vormittag.
+            </p>
+        </div>
+
+        {[0, 1, 2].map((depth) => (
+            <ul class="chaos-layer contents lg:block lg:absolute lg:left-8 lg:right-8 lg:top-20 lg:bottom-0" data-depth={depth} style={`z-index:${depth * 10}`}>
+                {cards.map((c, order) => ({ ...c, order })).filter((c) => c.depth === depth).map((c) => (
+                    <li
+                        class:list={[
+                            'chaos-card mt-3 lg:mt-0 lg:absolute lg:left-(--x) lg:top-(--y) lg:w-56 rounded-2xl border border-silverBorder bg-white/90 p-4 shadow-[0_18px_40px_-24px_rgba(20,20,20,0.18)]',
+                            !c.mobile && 'max-lg:hidden',
+                            depth === 0 && 'lg:opacity-70',
+                        ]}
+                        style={`--x:${c.x}%;--y:${c.y}%;order:${c.order + 1}`}
+                    >
+                        <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-inkMuted">
+                            <span class="flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d={ICONS[c.type]} />
+                                </svg>
+                                {c.type} · {c.from}
+                            </span>
+                            <time>{c.time}</time>
+                        </div>
+                        <p class="text-sm text-ink mt-2 leading-snug">{c.text}</p>
+                    </li>
+                ))}
+            </ul>
+        ))}
+    </div>
+</section>
+
+<script>
+    import { gsap, mm, DESKTOP, MOBILE, revealOnce } from '../../scripts/motion';
+
+    const section = document.querySelector<HTMLElement>('.chaos')!;
+    const cards = section.querySelectorAll<HTMLElement>('.chaos-card');
+    const layers = section.querySelectorAll<HTMLElement>('.chaos-layer');
+
+    mm.add(DESKTOP, () => {
+        const tl = gsap.timeline({
+            scrollTrigger: { trigger: section, start: 'top top', end: '+=180%', pin: true, scrub: 1, invalidateOnRefresh: true },
+        });
+        const depth = (el: Element) => Number(el.closest<HTMLElement>('.chaos-layer')!.dataset.depth);
+
+        // 1. Karten fliegen gestaffelt herein, vordere Ebenen aus größerer Distanz
+        tl.from(cards, { opacity: 0, y: (_, el) => 80 + depth(el) * 70, scale: 0.94, stagger: 0.12, duration: 1 });
+
+        // 2. Parallax: Ebenen wandern unterschiedlich schnell nach oben
+        layers.forEach((layer) => {
+            const shift = (Number(layer.dataset.depth) + 1) * 4;
+            tl.fromTo(layer, { yPercent: shift }, { yPercent: -shift, ease: 'power1.inOut', duration: tl.duration() }, 0);
+        });
+
+        // 3. Übergang zur Ordnung: alle Karten laufen in der Bildmitte zusammen
+        tl.to(cards, {
+            x: (_, el: HTMLElement) => el.parentElement!.clientWidth / 2 - (el.offsetLeft + el.offsetWidth / 2),
+            y: (_, el: HTMLElement) => el.parentElement!.clientHeight / 2 - (el.offsetTop + el.offsetHeight / 2),
+            scale: 0.4,
+            opacity: 0,
+            stagger: 0.03,
+            duration: 1,
+            ease: 'power3.inOut',
+        }).to('.chaos-head', { opacity: 0, y: -30, duration: 0.6 }, '<');
+    });
+
+    mm.add(MOBILE, () => revealOnce(cards));
+</script>

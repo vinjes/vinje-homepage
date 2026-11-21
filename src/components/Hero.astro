@@ -415,8 +415,11 @@
                 fillBottom: 'rgba(195, 193, 184, 0.25)',
             });
 
-            requestAnimationFrame(animate);
+            if (!still) requestAnimationFrame(animate);
         };
+
+        // Bei reduzierter Bewegung bleibt es beim ersten, statischen Bild
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         requestAnimationFrame(animate);
     }
