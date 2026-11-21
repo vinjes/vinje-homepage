@@ -1,0 +1,258 @@
+<!-- ==================== SCROLL-ERLEBNIS: Chaos → Ordnung → Knowledge Graph → Workflow → Struktur ==================== -->
+<section id="journey" class="journey relative h-[480vh] md:h-[520vh]" aria-label="Wie VINJE Informationen verknüpft und Prozesse automatisiert">
+    <div data-stage class="sticky top-0 h-screen w-full overflow-hidden">
+        <canvas data-canvas class="absolute inset-0 w-full h-full" aria-hidden="true"></canvas>
+
+        <!-- Beschriftungen für Graph-Cluster (illustrative Beispiele, keine Kundendaten) -->
+        <span data-label="0" class="journey-label">Customer</span>
+        <span data-label="1" class="journey-label">Email</span>
+        <span data-label="2" class="journey-label">Project</span>
+        <span data-label="3" class="journey-label">Invoice</span>
+        <span data-label="4" class="journey-label">Knowledge</span>
+
+        <div class="journey-veil absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+
+        <div data-overlay class="absolute inset-0 pointer-events-none">
+            <!-- Szene 1: Informationsflut -->
+            <div data-scene data-from="-0.1" data-to="0.22" class="journey-scene">
+                <p class="journey-kicker">01 // Informationsflut</p>
+                <h2 class="journey-title">Informationen, überall.</h2>
+                <p class="journey-text">Kunden-E-Mails, Anrufe und Support-Anfragen – ungeordnet, verteilt und ständig neu.</p>
+            </div>
+
+            <!-- Szene 2: VINJE ordnet -->
+            <div data-scene data-from="0.2" data-to="0.44" class="journey-scene">
+                <p class="journey-kicker">02 // vinje Engine</p>
+                <h2 class="journey-title">VINJE ordnet die Ströme.</h2>
+                <p class="journey-text">E-Mails werden analysiert, Telefonate transkribiert, Anfragen kategorisiert. Mistral & lokale LLMs auf europäischen Servern erkennen, was zusammengehört.</p>
+            </div>
+
+            <!-- Szene 3: Knowledge Graph -->
+            <div data-scene data-from="0.42" data-to="0.72" class="journey-scene">
+                <p class="journey-kicker">03 // Knowledge Graph</p>
+                <h2 class="journey-title">Ein Netzwerk statt Chaos.</h2>
+                <p class="journey-text">Kunden, Anfragen, Dokumente und Termine werden verknüpft – zu Wissen, das im Unternehmen bleibt.</p>
+            </div>
+
+            <!-- Szene 4: Automatisierter Workflow -->
+            <div data-scene data-from="0.7" data-to="0.9" class="journey-scene">
+                <p class="journey-kicker">04 // Automatisierte Prozesse</p>
+                <h2 class="journey-title">Eine Anfrage, sechs Schritte.</h2>
+                <ol class="journey-steps">
+                    <li data-step>Anfrage kommt per E-Mail rein</li>
+                    <li data-step>KI erkennt den Inhalt und identifiziert den Kunden</li>
+                    <li data-step>Relevante Unternehmensinformationen werden abgerufen</li>
+                    <li data-step>Anfrage wird kategorisiert</li>
+                    <li data-step>Passende Antwort wird vorbereitet</li>
+                    <li data-step>Termin oder Aufgabe wird angelegt</li>
+                </ol>
+            </div>
+
+            <!-- Szene 5: Strukturiertes Unternehmen -->
+            <div data-scene data-from="0.88" data-to="1.5" class="journey-scene pointer-events-auto">
+                <p class="journey-kicker">05 // Ergebnis</p>
+                <h2 class="journey-title">Aus Chaos wird Struktur.</h2>
+                <p class="journey-text">Zentralisiertes Wissen, strukturierte Informationen, automatisierte Prozesse – weniger manuelle Arbeit und ein besserer Überblick.</p>
+                <div class="mt-7 flex flex-col sm:flex-row gap-3">
+                    <button type="button" data-calendly-open class="journey-cta-primary">Erstgespräch vereinbaren</button>
+                    <a href="#leistungen" class="journey-cta-secondary">Leistungen entdecken</a>
+                </div>
+            </div>
+        </div>
+
+        <div data-progress class="journey-progress" aria-hidden="true">
+            <div data-progress-fill class="journey-progress-fill"></div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .journey-label {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        pointer-events: none;
+        font-size: 11px;
+        letter-spacing: 0.01em;
+        color: #555555;
+        white-space: nowrap;
+        will-change: transform, opacity;
+    }
+    .journey-label::before {
+        content: "";
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        margin-right: 6px;
+        border-radius: 9999px;
+        background: #141414;
+        vertical-align: middle;
+    }
+
+    /* Heller Schleier hinter dem Text, damit Lesbarkeit über dem Graphen bleibt */
+    .journey-veil {
+        background: linear-gradient(to right, rgba(247, 246, 242, 0.92) 0%, rgba(247, 246, 242, 0.6) 35%, rgba(247, 246, 242, 0) 65%);
+    }
+    @media (max-width: 767px) {
+        .journey-veil {
+            background: linear-gradient(to top, rgba(247, 246, 242, 0.95) 0%, rgba(247, 246, 242, 0.7) 35%, rgba(247, 246, 242, 0) 60%);
+        }
+    }
+
+    .journey-scene {
+        position: absolute;
+        left: 1.25rem;
+        right: 1.25rem;
+        bottom: 5.5rem;
+        opacity: 0;
+        will-change: transform, opacity;
+    }
+    @media (min-width: 768px) {
+        .journey-scene {
+            left: 4rem;
+            right: auto;
+            bottom: auto;
+            top: 50%;
+            width: min(34rem, 40vw);
+            translate: 0 -50%;
+        }
+    }
+
+    .journey-kicker {
+        font-size: 0.75rem;
+        color: #555555;
+        margin-bottom: 0.75rem;
+    }
+    .journey-title {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-weight: 600;
+        font-size: clamp(1.75rem, 3.6vw, 3rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: #141414;
+    }
+    .journey-text {
+        margin-top: 1rem;
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #555555;
+        max-width: 30rem;
+    }
+
+    .journey-steps {
+        margin-top: 1.25rem;
+        display: grid;
+        gap: 0.5rem;
+        list-style: none;
+        counter-reset: step;
+        padding: 0;
+    }
+    .journey-steps li {
+        counter-increment: step;
+        font-size: 0.95rem;
+        color: #8f8d85;
+        transition: color 0.2s ease;
+    }
+    .journey-steps li::before {
+        content: "0" counter(step) "  ";
+        color: #555555;
+        font-variant-numeric: tabular-nums;
+    }
+    .journey-steps li.is-on {
+        color: #141414;
+    }
+
+    .journey-cta-primary,
+    .journey-cta-secondary {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 9999px;
+        padding: 0.875rem 1.5rem;
+        white-space: nowrap;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .journey-cta-primary {
+        background: #141414;
+        color: #F7F6F2;
+    }
+    .journey-cta-primary:hover {
+        background: rgba(20, 20, 20, 0.85);
+    }
+    .journey-cta-secondary {
+        border: 1px solid #C8C6BE;
+        color: #141414;
+        background: rgba(247, 246, 242, 0.7);
+    }
+    .journey-cta-secondary:hover {
+        background: #EFECE4;
+    }
+
+    .journey-progress {
+        position: absolute;
+        left: 1.25rem;
+        right: 1.25rem;
+        bottom: 2rem;
+        height: 1px;
+        background: #E2E0D8;
+    }
+    .journey-progress-fill {
+        height: 1px;
+        background: #141414;
+        transform-origin: left;
+        transform: scaleX(0);
+    }
+
+    /* Ohne Bewegung oder ohne WebGL: Canvas als Standbild, Texte darunter untereinander */
+    .journey.journey-static {
+        height: auto;
+    }
+    .journey.journey-static [data-stage] {
+        position: relative;
+        height: auto;
+        overflow: visible;
+    }
+    .journey.journey-static [data-canvas] {
+        position: relative;
+        inset: auto;
+        height: 70vh;
+        min-height: 420px;
+    }
+    .journey.journey-static [data-overlay] {
+        position: relative;
+        inset: auto;
+        padding: 2.5rem 1.25rem 3rem;
+    }
+    .journey.journey-static .journey-scene {
+        position: relative;
+        left: auto;
+        right: auto;
+        top: auto;
+        bottom: auto;
+        width: auto;
+        translate: none;
+        transform: none !important;
+        opacity: 1 !important;
+        margin-bottom: 2.5rem;
+    }
+    .journey.journey-static .journey-label {
+        opacity: 0.8;
+    }
+    .journey.journey-static .journey-veil {
+        display: none;
+    }
+    .journey.journey-static [data-progress] {
+        display: none;
+    }
+    .journey.journey-static .journey-steps li {
+        color: #141414;
+    }
+</style>
+
+<script>
+    import { mountJourney } from '../scroll/journey';
+    mountJourney(document.getElementById('journey'));
+</script>
