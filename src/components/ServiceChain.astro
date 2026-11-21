@@ -1,0 +1,28 @@
+---
+// Kette Input → vinje Engine → Produktives System an einer Leistungs-Station (Inhalte der früheren Pipeline-Karte)
+type Link = { step: string; title: string; desc: string } | { step: string; results: string[][] };
+const { chain } = Astro.props as { chain: Link[] };
+---
+<ol class="reveal grid gap-4 pl-5 border-l border-silverBorder" aria-label="Von den Daten zum System">
+    {chain.map((c) => (
+        <li class="relative">
+            <span class="absolute -left-[1.6rem] top-1 w-2.5 h-2.5 rounded-full bg-ink ring-4 ring-paper" aria-hidden="true"></span>
+            <span class="text-[11px] font-mono uppercase tracking-wider text-inkMuted">{c.step}</span>
+            {'title' in c ? (
+                <Fragment>
+                    <p class="text-sm font-medium text-ink mt-0.5">{c.title}</p>
+                    <p class="text-xs text-inkMuted mt-0.5">{c.desc}</p>
+                </Fragment>
+            ) : (
+                <div class="grid grid-cols-2 gap-3 mt-1.5">
+                    {c.results.map(([t, d]) => (
+                        <div class="p-3 rounded-xl bg-ink text-paper">
+                            <div class="font-display text-sm font-semibold tracking-tight">{t}</div>
+                            <div class="text-[11px] text-paper/75 mt-0.5">{d}</div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </li>
+    ))}
+</ol>

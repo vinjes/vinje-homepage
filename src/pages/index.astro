@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import Journey from '../components/Journey.astro';
 import Services from '../components/Services.astro';
 import Process from '../components/Process.astro';
 import About from '../components/About.astro';
@@ -15,11 +16,16 @@ import CalendlyModal from '../components/CalendlyModal.astro';
 <Layout>
     <Header />
     <main>
-        <Hero />
-        <Services />
-        <Process />
-        <About />
-        <Contact />
+        <!-- Eine Bühne bis zum Seitenende: Hero und Erzählung oben, darunter Leistungen bis Kontakt über demselben Graphen -->
+        <Journey>
+            <Hero />
+            <Fragment slot="lower">
+                <Services />
+                <Process />
+                <About />
+                <Contact />
+            </Fragment>
+        </Journey>
     </main>
     <Footer />
     <LegalModal />
