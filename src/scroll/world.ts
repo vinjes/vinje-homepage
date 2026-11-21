@@ -7,8 +7,8 @@ import { at } from './timeline';
  * Der innere Graph (journey.ts) liegt im Ursprung und ist in dieser Welt ein Cluster unter vielen.
  */
 
-// Cluster-Gruppen, an denen der untere Teil hält (Leistungen 01–03); weitere Gruppen werden zufällig verteilt
-export const SERVICE_GROUPS = [new THREE.Vector3(-30, 9, -12), new THREE.Vector3(26, -10, -20), new THREE.Vector3(4, 24, 14)];
+// Cluster-Gruppen, an denen der untere Teil hält (Leistungen 01–03), dicht nebeneinander: kurze Kamerafahrt dazwischen
+export const SERVICE_GROUPS = [new THREE.Vector3(-30, 9, -12), new THREE.Vector3(-8, 4, -14), new THREE.Vector3(14, 9, -12)];
 
 type U = { value: number };
 
@@ -40,8 +40,8 @@ export function buildWorld(count: number, rand: () => number, shared: { uPx: U; 
   );
 
   // Erscheinen: von innen nach außen, während die Kamera aus dem inneren Graphen herausfährt
-  const r0 = at('to-project', 0.4);
-  const r1 = at('to-result', 0.8);
+  const r0 = at('to-services', 0.1);
+  const r1 = at('to-services', 0.8);
   const revealAt = (v: THREE.Vector3) => r0 + (r1 - r0) * Math.min(1, Math.max(0, (v.length() - 10) / 50));
 
   const pos = new Float32Array(count * 3);
@@ -103,7 +103,7 @@ export function buildWorld(count: number, rand: () => number, shared: { uPx: U; 
   const uniforms = {
     uP: { value: 0 },
     uTime: { value: 0 },
-    uFade: { value: 1 }, // gemeinsame Deckkraft (z. B. abgedunkelt hinter Detail-Stationen)
+    uFade: { value: 1 }, // gemeinsame Deckkraft
     uFlow: { value: 1 }, // Datenströme; im Kontakt beruhigt sich das Netz
     uPx: shared.uPx,
     uFar: shared.uFar,

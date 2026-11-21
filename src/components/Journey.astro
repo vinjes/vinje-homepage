@@ -1,12 +1,7 @@
 ---
 import { TIMELINE } from '../scroll/timeline';
-// Unterknoten der Detail-Zooms (illustrativ, ohne Namen und Zahlen)
-const EMAIL_PARTS = ['Absender', 'Betreff', 'Kategorie', 'verknüpfter Kunde', 'Projekt'];
-const PROJECT_PARTS = ['Kunde', 'Angebot', 'Termin', 'Aufgabe', 'Dokument', 'Rechnung'];
-// Signalpfad der backcall-Station: Planet → Call → Knowledge → Task → Employee
-const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
 ---
-<!-- ==================== SCROLL-ERLEBNIS: Stern → E-Mails → Graph → Workflow → backcall → Welt → Leistungen … Kontakt ==================== -->
+<!-- ==================== SCROLL-ERLEBNIS: Stern → Graph → Welt → Leistungen … Kontakt ==================== -->
 <!-- Die Stage (Canvas + Overlays) ist sticky über die ganze Section: oben die gepinnte Strecke (data-track), danach der untere Teil (Slot "lower") im normalen Fluss darüber. -->
 <!-- Zeitachse, Stationen und Scroll-Längen: src/scroll/timeline.ts -->
 <section id="journey" class="journey relative" aria-label="Wie VINJE Informationen verknüpft und Prozesse automatisiert">
@@ -16,156 +11,19 @@ const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
             <slot />
         </div>
 
-        <!-- Silberwellen aus dem bisherigen Hero, blenden beim Scrollen aus -->
-        <div data-waves class="journey-waves pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-            <!-- Sanft pulsierende silbrig-weiße Lichtakzente -->
-            <div class="animate-silver-orb absolute -top-24 right-1/4 w-[28rem] h-[28rem] rounded-full bg-gradient-to-br from-white/90 via-[#DFDDD5]/50 to-transparent blur-3xl"></div>
-            <div class="animate-silver-orb absolute -bottom-28 left-10 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tr from-[#C9C7BE]/45 via-white/85 to-transparent blur-3xl" style="animation-delay: -6s;"></div>
-
-            <!-- Echtzeit-Canvas für fließende metallische Seidenwellen -->
-            <canvas id="hero-wave-canvas" class="absolute inset-0 w-full h-full opacity-90"></canvas>
-
-            <!-- Vektor-Wellen & animierte Licht-Glanzlinien -->
-            <svg class="relative w-full h-full object-cover opacity-85" viewBox="0 0 1440 820" fill="none" preserveAspectRatio="xMidYMid slice">
-                <defs>
-                    <linearGradient id="silverWave1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
-                        <stop offset="38%" stop-color="#DFDDD5" stop-opacity="0.65"/>
-                        <stop offset="68%" stop-color="#AEACA3" stop-opacity="0.32"/>
-                        <stop offset="100%" stop-color="#F7F6F2" stop-opacity="0"/>
-                    </linearGradient>
-                    <linearGradient id="silverWave2" x1="100%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
-                        <stop offset="45%" stop-color="#C9C7BE" stop-opacity="0.45"/>
-                        <stop offset="80%" stop-color="#8F8D85" stop-opacity="0.22"/>
-                        <stop offset="100%" stop-color="#F7F6F2" stop-opacity="0"/>
-                    </linearGradient>
-                    <linearGradient id="silverHighlight" x1="0%" y1="50%" x2="100%" y2="50%">
-                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0"/>
-                        <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.95"/>
-                        <stop offset="100%" stop-color="#B5B3AA" stop-opacity="0.2"/>
-                    </linearGradient>
-                </defs>
-
-                <!-- Obere rechte metallische Seidenwelle -->
-                <g class="animate-wave-slow">
-                    <path d="M680 -60 C820 140, 1080 230, 1500 280 L1500 -60 Z" fill="url(#silverWave2)"/>
-                    <path d="M760 -40 C910 155, 1140 215, 1480 250" stroke="url(#silverHighlight)" stroke-width="2.5"/>
-                    <path class="animate-wave-shimmer" d="M760 -40 C910 155, 1140 215, 1480 250" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
-                    <path d="M840 -50 C960 120, 1190 190, 1490 210" stroke="#9C9A92" stroke-opacity="0.28" stroke-width="1.2"/>
-                </g>
-
-                <!-- Untere linke fließende Silberwelle -->
-                <g class="animate-wave-reverse">
-                    <path d="M-80 240 C240 310, 390 560, 740 610 C1050 655, 1260 540, 1520 670 L1520 880 L-80 880 Z" fill="url(#silverWave1)"/>
-                    <path d="M-60 280 C250 350, 380 575, 730 615 C1030 650, 1250 560, 1500 660" stroke="url(#silverHighlight)" stroke-width="3"/>
-                    <path class="animate-wave-shimmer-delayed" d="M-60 280 C250 350, 380 575, 730 615 C1030 650, 1250 560, 1500 660" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M-40 390 C210 445, 360 640, 680 655 C940 668, 1150 610, 1480 740" stroke="#8C8A82" stroke-opacity="0.22" stroke-width="1.5"/>
-                </g>
-            </svg>
-        </div>
-
-        <canvas data-canvas class="absolute inset-0 w-full h-full" aria-hidden="true"></canvas>
-
-        <!-- Beschriftungen für Graph-Cluster (illustrative Beispiele, keine Kundendaten) -->
-        <span data-label="0" class="journey-label" aria-hidden="true">Customer</span>
-        <span data-label="1" class="journey-label" aria-hidden="true">Email</span>
-        <span data-label="2" class="journey-label" aria-hidden="true">Project</span>
-        <span data-label="3" class="journey-label" aria-hidden="true">Invoice</span>
-        <span data-label="4" class="journey-label" aria-hidden="true">Knowledge</span>
-
-        <!-- Fächer, in die die E-Mails sortiert werden (illustrativ) -->
-        <span data-bin="0" class="journey-label journey-bin" aria-hidden="true">Anfrage</span>
-        <span data-bin="1" class="journey-label journey-bin" aria-hidden="true">Angebot</span>
-        <span data-bin="2" class="journey-label journey-bin" aria-hidden="true">Rechnung</span>
-        <span data-bin="3" class="journey-label journey-bin" aria-hidden="true">Support</span>
-
-        <!-- Detail-Zooms: Unterknoten kreisen um einen Email- bzw. Project-Knoten -->
-        <span data-detail="email" data-i="title" class="journey-label journey-label-title" aria-hidden="true">Email</span>
-        {EMAIL_PARTS.map((t) => <span data-detail="email" class="journey-label" aria-hidden="true">{t}</span>)}
-        <span data-detail="project" data-i="title" class="journey-label journey-label-title" aria-hidden="true">Project</span>
-        {PROJECT_PARTS.map((t) => <span data-detail="project" class="journey-label" aria-hidden="true">{t}</span>)}
-
-        <!-- backcall: Planet und Knoten des Signalpfads -->
-        {CALL_NODES.map((t, k) => <span data-call={k} class:list={['journey-label', k === 0 && 'journey-label-title']} aria-hidden="true">{t}</span>)}
+        <canvas data-canvas class="absolute inset-0 w-full h-full opacity-60" aria-hidden="true"></canvas>
 
         <!-- Unterer Teil: Ablauf-Schritte als Knoten, Vincent & Jesse als verbundene Knoten (Desktop) -->
         {['01', '02', '03', '04'].map((t, k) => <span data-step-node={k} class="journey-label journey-bin" aria-hidden="true">{t}</span>)}
-        <span data-person="0" class="journey-person" aria-hidden="true"><img src="./images/vincent.jpg" alt="" width="112" height="112" loading="lazy" /></span>
-        <span data-person="1" class="journey-person" aria-hidden="true"><img src="./images/jesse.jpg" alt="" width="112" height="112" loading="lazy" /></span>
 
         <div data-veil class="journey-veil absolute inset-0 pointer-events-none" aria-hidden="true"></div>
         <!-- Ruhiger Papier-Schleier hinter dem unteren Teil (Formulare, lange Texte) -->
         <div data-veil-lower class="journey-veil-lower absolute inset-0 pointer-events-none" aria-hidden="true"></div>
 
-        <div data-overlay class="absolute inset-0 pointer-events-none">
-            <!-- Szenen hängen an Stationen der Zeitachse (data-scene = Station); data-line schaltet nacheinander frei -->
-            <!-- Szene 1: Informationsflut -->
-            <div data-scene="flood" class="journey-scene">
-                <p class="journey-kicker">01 // Informationsflut</p>
-                <h2 class="journey-title">Informationen, überall.</h2>
-                <p class="journey-text" data-line>Kunden-E-Mails, Anrufe und Support-Anfragen – ungeordnet, verteilt und ständig neu.</p>
-            </div>
-
-            <!-- Szene 2: VINJE ordnet -->
-            <div data-scene="sort" class="journey-scene">
-                <p class="journey-kicker">02 // vinje Engine</p>
-                <h2 class="journey-title">VINJE ordnet die Ströme.</h2>
-                <p class="journey-text"><span data-line>E-Mails werden analysiert, Telefonate transkribiert, Anfragen kategorisiert.</span> <span data-line>Mistral & lokale LLMs auf europäischen Servern erkennen, was zusammengehört.</span></p>
-                <p class="journey-engine" data-line>backmail, backcall &amp; Multi-Agenten</p>
-            </div>
-
-            <!-- Szene 3: Knowledge Graph -->
-            <div data-scene="graph" class="journey-scene">
-                <p class="journey-kicker">03 // Knowledge Graph</p>
-                <h2 class="journey-title">Ein Netzwerk statt Chaos.</h2>
-                <p class="journey-text"><span data-line>Kunden, Anfragen, Dokumente und Termine werden verknüpft –</span> <span data-line>zu Wissen, das im Unternehmen bleibt.</span></p>
-            </div>
-
-            <!-- Szene 4: Automatisierter Workflow (Schritte schalten mit dem Pfad frei) -->
-            <div data-scene="workflow" class="journey-scene">
-                <p class="journey-kicker">04 // Automatisierte Prozesse</p>
-                <h2 class="journey-title">Eine Anfrage, sechs Schritte.</h2>
-                <ol class="journey-steps">
-                    <li data-step>Anfrage kommt per E-Mail rein</li>
-                    <li data-step>KI erkennt den Inhalt und identifiziert den Kunden</li>
-                    <li data-step>Relevante Unternehmensinformationen werden abgerufen</li>
-                    <li data-step>Anfrage wird kategorisiert</li>
-                    <li data-step>Passende Antwort wird vorbereitet</li>
-                    <li data-step>Termin oder Aufgabe wird angelegt</li>
-                </ol>
-            </div>
-
-            <!-- Szene 5: backcall – derselbe Graph, zweiter Kanal (Schritte schalten mit dem Signalpfad frei) -->
-            <div data-scene="call" class="journey-scene">
-                <p class="journey-kicker">05 // backcall</p>
-                <h2 class="journey-title">Ein Anruf, fünf Schritte.</h2>
-                <ol class="journey-steps">
-                    <li data-step>Anruf kommt rein, backcall nimmt ab</li>
-                    <li data-step>Das Anliegen wird erkannt, einfache Fragen direkt beantwortet</li>
-                    <li data-step>Nach dem Ausweisen: Auskunft aus euren Daten</li>
-                    <li data-step>Vorläufiger Eintrag, Formular oder Nachricht wird angelegt</li>
-                    <li data-step>Euer Team prüft und bestätigt jeden Fall</li>
-                </ol>
-            </div>
-
-            <!-- Szene 6: Strukturiertes Unternehmen, die Welt im Ganzen -->
-            <div data-scene="result" class="journey-scene">
-                <p class="journey-kicker">06 // Ergebnis</p>
-                <h2 class="journey-title">Aus Chaos wird Struktur.</h2>
-                <p class="journey-text" data-line>Zentralisiertes Wissen, strukturierte Informationen, automatisierte Prozesse – weniger manuelle Arbeit und ein besserer Überblick.</p>
-                <div class="journey-products" data-line>
-                    <p class="journey-kicker">Produktives System · Kundensystem</p>
-                    <ul>
-                        <li><strong>backmail</strong> – KI-E-Mail-Client &amp; Auto-Antworten</li>
-                        <li><strong>backcall</strong> – KI-Voice-Assistant für Telefonanrufe</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div data-progress class="journey-progress" aria-hidden="true">
-            <div data-progress-fill class="journey-progress-fill"></div>
+        <!-- Leistungen: Stufen-Balken links (01 Automatisierung → 02 Prognosen → 03 Dashboard), nur breite Bildschirme -->
+        <div data-svc-rail class="journey-rail" aria-hidden="true">
+            <div data-svc-fill class="journey-rail-fill"></div>
+            {['01', '02', '03'].map((t, k) => <span data-svc-step={k} class="journey-rail-step" style={`top: ${k * 50}%`}>{t}</span>)}
         </div>
     </div>
 
@@ -211,42 +69,6 @@ const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
         translate: -50% 0;
         font-size: 12px;
         color: #141414;
-    }
-    .journey-label-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: #141414;
-    }
-    .journey-label-title::before {
-        width: 7px;
-        height: 7px;
-    }
-
-    /* Vincent & Jesse: Fotos tauchen an den beiden Knoten auf (nur Desktop, dekorativ) */
-    .journey-person {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 4.5rem;
-        height: 4.5rem;
-        margin: -2.25rem 0 0 -2.25rem;
-        border-radius: 9999px;
-        overflow: hidden;
-        border: 1px solid #E2E0D8;
-        box-shadow: 0 0 0 4px #F7F6F2;
-        opacity: 0;
-        pointer-events: none;
-        will-change: transform, opacity;
-    }
-    .journey-person img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    @media (max-width: 767px) {
-        .journey-person {
-            display: none;
-        }
     }
 
     /* Die Stage belegt oben 100vh im Fluss; die Strecke beginnt trotzdem beim ersten Pixel */
@@ -298,7 +120,8 @@ const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
     }
     @media (min-width: 768px) {
         .journey-scene {
-            left: 4rem;
+            /* gleiche linke Kante wie Header und untere Sections (max-w-6xl + px-8) */
+            left: max(2rem, calc((100% - 72rem) / 2 + 2rem));
             right: auto;
             bottom: auto;
             top: 50%;
@@ -323,94 +146,44 @@ const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
         }
     }
 
-    .journey-kicker {
-        font-size: 0.75rem;
-        color: #555555;
-        margin-bottom: 0.75rem;
-    }
-    .journey-title {
-        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-        font-weight: 600;
-        font-size: clamp(1.75rem, 3.6vw, 3rem);
-        line-height: 1.1;
-        letter-spacing: -0.02em;
-        color: #141414;
-    }
-    .journey-text {
-        margin-top: 1rem;
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #555555;
-        max-width: 30rem;
-    }
 
-    .journey-engine {
-        margin-top: 1rem;
-        display: inline-block;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #141414;
-        padding: 0.35rem 0.75rem;
-        border: 1px solid #E2E0D8;
-        border-radius: 9999px;
-        background: rgba(247, 246, 242, 0.85);
-    }
-    .journey-products {
-        margin-top: 1.5rem;
-        padding-top: 1rem;
-        border-top: 1px solid #E2E0D8;
-        max-width: 30rem;
-    }
-    .journey-products .journey-kicker {
-        margin-bottom: 0.5rem;
-    }
-    .journey-products ul {
-        display: grid;
-        gap: 0.35rem;
-        font-size: 0.95rem;
-        color: #555555;
-    }
-    .journey-products strong {
-        color: #141414;
-        font-weight: 600;
-    }
-
-    .journey-steps {
-        margin-top: 1.25rem;
-        display: grid;
-        gap: 0.5rem;
-        list-style: none;
-        counter-reset: step;
-        padding: 0;
-    }
-    .journey-steps li {
-        counter-increment: step;
-        font-size: 0.95rem;
-        color: #8f8d85;
-        transition: color 0.2s ease;
-    }
-    .journey-steps li::before {
-        content: "0" counter(step) "  ";
-        color: #555555;
-        font-variant-numeric: tabular-nums;
-    }
-    .journey-steps li.is-on {
-        color: #141414;
-    }
-
-    .journey-progress {
+    .journey-rail {
+        display: none;
         position: absolute;
-        left: 1.25rem;
-        right: 1.25rem;
-        bottom: 2rem;
-        height: 1px;
+        left: 2rem;
+        top: 30vh;
+        height: 40vh;
+        width: 1px;
         background: #E2E0D8;
+        opacity: 0;
     }
-    .journey-progress-fill {
-        height: 1px;
+    @media (min-width: 1280px) {
+        .journey-rail {
+            display: block;
+        }
+    }
+    .journey-rail-fill {
+        height: 100%;
         background: #141414;
-        transform-origin: left;
-        transform: scaleX(0);
+        transform-origin: top;
+        transform: scaleY(0);
+    }
+    .journey-rail-step {
+        position: absolute;
+        left: 0;
+        translate: -50% -50%;
+        padding: 0.2rem 0.35rem;
+        border: 1px solid #E2E0D8;
+        border-radius: 0.375rem;
+        background: #F7F6F2;
+        font: 500 0.65rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #8F8D85;
+        transition: color 0.3s, border-color 0.3s, background-color 0.3s;
+    }
+    .journey-rail-step.is-on {
+        color: #F7F6F2;
+        background: #141414;
+        border-color: #141414;
     }
 
     /* Ohne Bewegung oder ohne WebGL: Canvas als Standbild, Texte darunter untereinander */
@@ -420,9 +193,7 @@ const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
         flex-direction: column;
     }
     .journey.journey-static [data-track],
-    .journey.journey-static [data-waves],
     .journey.journey-static .journey-bin,
-    .journey.journey-static .journey-person,
     .journey.journey-static .journey-veil-lower {
         display: none;
     }
@@ -445,11 +216,6 @@ const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
         height: 70vh;
         min-height: 420px;
     }
-    .journey.journey-static [data-overlay] {
-        position: relative;
-        inset: auto;
-        padding: 2.5rem 1.25rem 3rem;
-    }
     .journey.journey-static .journey-scene {
         position: relative;
         left: auto;
@@ -468,14 +234,8 @@ const CALL_NODES = ['backcall', 'Call', 'Knowledge', 'Task', 'Employee'];
     .journey.journey-static .journey-veil {
         display: none;
     }
-    .journey.journey-static [data-progress] {
+    .journey.journey-static [data-svc-rail] {
         display: none;
-    }
-    .journey.journey-static .journey-steps li {
-        color: #141414;
-    }
-    .journey.journey-static [data-line] {
-        opacity: 1 !important;
     }
 </style>
 

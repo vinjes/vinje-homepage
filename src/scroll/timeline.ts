@@ -14,32 +14,18 @@ export interface Segment {
 }
 
 export const TIMELINE: Segment[] = [
-  { id: 'hero', kind: 'station', vh: [40, 25] }, // erstes Bild, bewusst kurz (Plan 05)
-  { id: 'to-flood', kind: 'move', vh: [80, 50] },
-  { id: 'flood', kind: 'station', vh: [100, 70] },
-  { id: 'to-sort', kind: 'move', vh: [60, 40] },
-  { id: 'sort', kind: 'station', vh: [100, 70] },
-  { id: 'to-graph', kind: 'move', vh: [80, 50] },
-  { id: 'graph', kind: 'station', vh: [100, 70] },
-  { id: 'to-email', kind: 'move', vh: [50, 35] },
-  { id: 'zoom-email', kind: 'station', vh: [100, 60] },
-  { id: 'to-flow', kind: 'move', vh: [50, 35] },
-  { id: 'workflow', kind: 'station', vh: [140, 100] },
-  { id: 'to-call', kind: 'move', vh: [70, 45] },
-  { id: 'call', kind: 'station', vh: [140, 100] }, // backcall: zweiter Kanal nach dem E-Mail-Workflow
-  { id: 'to-project', kind: 'move', vh: [50, 35] },
-  { id: 'zoom-project', kind: 'station', vh: [100, 60] },
-  { id: 'to-result', kind: 'move', vh: [100, 60] },
-  { id: 'result', kind: 'station', vh: [100, 70] },
-  { id: 'to-services', kind: 'move', vh: [80, 50] },
+  { id: 'hero', kind: 'station', vh: [30, 20] }, // erstes Bild, bewusst kurz (Plan 05)
+  // Kurzer Auftakt statt Erzählung: Inhalte (Workflow, backcall) zeigen die Leistungen samt Demos
+  { id: 'to-graph', kind: 'move', vh: [50, 35] }, // Stern löst sich auf, Graph entsteht
+  { id: 'graph', kind: 'station', vh: [30, 20] }, // kurzer Halt ohne Text: der fertige Graph
+  { id: 'to-services', kind: 'move', vh: [45, 30] }, // Herauszoom in die Welt, Leistungen schieben sich darüber
   // Unterer Teil: Inhalt scrollt nativ über der weiterlaufenden Bühne
-  { id: 'services-ki', kind: 'station', vh: [110, 80], flow: true },
-  { id: 'services-ml', kind: 'station', vh: [110, 80], flow: true },
-  { id: 'services-bi', kind: 'station', vh: [110, 80], flow: true },
-  { id: 'stack-eu', kind: 'station', vh: [90, 70], flow: true },
-  { id: 'process', kind: 'station', vh: [160, 110], flow: true },
-  { id: 'about', kind: 'station', vh: [120, 90], flow: true },
-  { id: 'contact', kind: 'station', vh: [120, 100], flow: true },
+  { id: 'services-ki', kind: 'station', vh: [50, 40], flow: true },
+  { id: 'services-ml', kind: 'station', vh: [50, 40], flow: true },
+  { id: 'services-bi', kind: 'station', vh: [50, 40], flow: true },
+  { id: 'process', kind: 'station', vh: [80, 60], flow: true },
+  { id: 'about', kind: 'station', vh: [60, 50], flow: true },
+  { id: 'contact', kind: 'station', vh: [60, 50], flow: true },
 ];
 
 // Mindesthöhe eines Blocks im unteren Teil (Desktop/Mobil) als CSS-Variablen für .journey-block
