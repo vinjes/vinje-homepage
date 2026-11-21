@@ -1,41 +1,97 @@
-<!-- ==================== SCROLL-ERLEBNIS: Chaos → Ordnung → Knowledge Graph → Workflow → Struktur ==================== -->
-<section id="journey" class="journey relative h-[480vh] md:h-[520vh]" aria-label="Wie VINJE Informationen verknüpft und Prozesse automatisiert">
+<!-- ==================== SCROLL-ERLEBNIS: Hero → E-Mails → Sortierung → Knowledge Graph → Workflow → Struktur ==================== -->
+<!-- Die Stage (Canvas + Overlays) ist sticky ab dem ersten Pixel; der Hero (Slot) scrollt darüber weg, danach läuft die gepinnte Strecke (data-track). -->
+<section id="journey" class="journey relative" aria-label="Wie VINJE Informationen verknüpft und Prozesse automatisiert">
     <div data-stage class="sticky top-0 h-screen w-full overflow-hidden">
+        <!-- Silberwellen aus dem bisherigen Hero, blenden beim Scrollen aus -->
+        <div data-waves class="journey-waves pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            <!-- Sanft pulsierende silbrig-weiße Lichtakzente -->
+            <div class="animate-silver-orb absolute -top-24 right-1/4 w-[28rem] h-[28rem] rounded-full bg-gradient-to-br from-white/90 via-[#DFDDD5]/50 to-transparent blur-3xl"></div>
+            <div class="animate-silver-orb absolute -bottom-28 left-10 w-[32rem] h-[32rem] rounded-full bg-gradient-to-tr from-[#C9C7BE]/45 via-white/85 to-transparent blur-3xl" style="animation-delay: -6s;"></div>
+
+            <!-- Echtzeit-Canvas für fließende metallische Seidenwellen -->
+            <canvas id="hero-wave-canvas" class="absolute inset-0 w-full h-full opacity-90"></canvas>
+
+            <!-- Vektor-Wellen & animierte Licht-Glanzlinien -->
+            <svg class="relative w-full h-full object-cover opacity-85" viewBox="0 0 1440 820" fill="none" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <linearGradient id="silverWave1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+                        <stop offset="38%" stop-color="#DFDDD5" stop-opacity="0.65"/>
+                        <stop offset="68%" stop-color="#AEACA3" stop-opacity="0.32"/>
+                        <stop offset="100%" stop-color="#F7F6F2" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="silverWave2" x1="100%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+                        <stop offset="45%" stop-color="#C9C7BE" stop-opacity="0.45"/>
+                        <stop offset="80%" stop-color="#8F8D85" stop-opacity="0.22"/>
+                        <stop offset="100%" stop-color="#F7F6F2" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="silverHighlight" x1="0%" y1="50%" x2="100%" y2="50%">
+                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0"/>
+                        <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+                        <stop offset="100%" stop-color="#B5B3AA" stop-opacity="0.2"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Obere rechte metallische Seidenwelle -->
+                <g class="animate-wave-slow">
+                    <path d="M680 -60 C820 140, 1080 230, 1500 280 L1500 -60 Z" fill="url(#silverWave2)"/>
+                    <path d="M760 -40 C910 155, 1140 215, 1480 250" stroke="url(#silverHighlight)" stroke-width="2.5"/>
+                    <path class="animate-wave-shimmer" d="M760 -40 C910 155, 1140 215, 1480 250" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+                    <path d="M840 -50 C960 120, 1190 190, 1490 210" stroke="#9C9A92" stroke-opacity="0.28" stroke-width="1.2"/>
+                </g>
+
+                <!-- Untere linke fließende Silberwelle -->
+                <g class="animate-wave-reverse">
+                    <path d="M-80 240 C240 310, 390 560, 740 610 C1050 655, 1260 540, 1520 670 L1520 880 L-80 880 Z" fill="url(#silverWave1)"/>
+                    <path d="M-60 280 C250 350, 380 575, 730 615 C1030 650, 1250 560, 1500 660" stroke="url(#silverHighlight)" stroke-width="3"/>
+                    <path class="animate-wave-shimmer-delayed" d="M-60 280 C250 350, 380 575, 730 615 C1030 650, 1250 560, 1500 660" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M-40 390 C210 445, 360 640, 680 655 C940 668, 1150 610, 1480 740" stroke="#8C8A82" stroke-opacity="0.22" stroke-width="1.5"/>
+                </g>
+            </svg>
+        </div>
+
         <canvas data-canvas class="absolute inset-0 w-full h-full" aria-hidden="true"></canvas>
 
         <!-- Beschriftungen für Graph-Cluster (illustrative Beispiele, keine Kundendaten) -->
-        <span data-label="0" class="journey-label">Customer</span>
-        <span data-label="1" class="journey-label">Email</span>
-        <span data-label="2" class="journey-label">Project</span>
-        <span data-label="3" class="journey-label">Invoice</span>
-        <span data-label="4" class="journey-label">Knowledge</span>
+        <span data-label="0" class="journey-label" aria-hidden="true">Customer</span>
+        <span data-label="1" class="journey-label" aria-hidden="true">Email</span>
+        <span data-label="2" class="journey-label" aria-hidden="true">Project</span>
+        <span data-label="3" class="journey-label" aria-hidden="true">Invoice</span>
+        <span data-label="4" class="journey-label" aria-hidden="true">Knowledge</span>
+
+        <!-- Fächer, in die die E-Mails sortiert werden (illustrativ) -->
+        <span data-bin="0" class="journey-label journey-bin" aria-hidden="true">Anfrage</span>
+        <span data-bin="1" class="journey-label journey-bin" aria-hidden="true">Angebot</span>
+        <span data-bin="2" class="journey-label journey-bin" aria-hidden="true">Rechnung</span>
+        <span data-bin="3" class="journey-label journey-bin" aria-hidden="true">Support</span>
 
         <div class="journey-veil absolute inset-0 pointer-events-none" aria-hidden="true"></div>
 
         <div data-overlay class="absolute inset-0 pointer-events-none">
             <!-- Szene 1: Informationsflut -->
-            <div data-scene data-from="-0.1" data-to="0.22" class="journey-scene">
+            <div data-scene data-from="0.11" data-to="0.27" class="journey-scene">
                 <p class="journey-kicker">01 // Informationsflut</p>
                 <h2 class="journey-title">Informationen, überall.</h2>
                 <p class="journey-text">Kunden-E-Mails, Anrufe und Support-Anfragen – ungeordnet, verteilt und ständig neu.</p>
             </div>
 
             <!-- Szene 2: VINJE ordnet -->
-            <div data-scene data-from="0.2" data-to="0.44" class="journey-scene">
+            <div data-scene data-from="0.25" data-to="0.43" class="journey-scene">
                 <p class="journey-kicker">02 // vinje Engine</p>
                 <h2 class="journey-title">VINJE ordnet die Ströme.</h2>
                 <p class="journey-text">E-Mails werden analysiert, Telefonate transkribiert, Anfragen kategorisiert. Mistral & lokale LLMs auf europäischen Servern erkennen, was zusammengehört.</p>
             </div>
 
             <!-- Szene 3: Knowledge Graph -->
-            <div data-scene data-from="0.42" data-to="0.72" class="journey-scene">
+            <div data-scene data-from="0.41" data-to="0.68" class="journey-scene">
                 <p class="journey-kicker">03 // Knowledge Graph</p>
                 <h2 class="journey-title">Ein Netzwerk statt Chaos.</h2>
                 <p class="journey-text">Kunden, Anfragen, Dokumente und Termine werden verknüpft – zu Wissen, das im Unternehmen bleibt.</p>
             </div>
 
             <!-- Szene 4: Automatisierter Workflow -->
-            <div data-scene data-from="0.7" data-to="0.9" class="journey-scene">
+            <div data-scene data-from="0.66" data-to="0.87" class="journey-scene">
                 <p class="journey-kicker">04 // Automatisierte Prozesse</p>
                 <h2 class="journey-title">Eine Anfrage, sechs Schritte.</h2>
                 <ol class="journey-steps">
@@ -49,7 +105,7 @@
             </div>
 
             <!-- Szene 5: Strukturiertes Unternehmen -->
-            <div data-scene data-from="0.88" data-to="1.5" class="journey-scene pointer-events-auto">
+            <div data-scene data-from="0.85" data-to="1.5" class="journey-scene pointer-events-auto">
                 <p class="journey-kicker">05 // Ergebnis</p>
                 <h2 class="journey-title">Aus Chaos wird Struktur.</h2>
                 <p class="journey-text">Zentralisiertes Wissen, strukturierte Informationen, automatisierte Prozesse – weniger manuelle Arbeit und ein besserer Überblick.</p>
@@ -64,6 +120,11 @@
             <div data-progress-fill class="journey-progress-fill"></div>
         </div>
     </div>
+
+    <div data-hero class="journey-hero relative z-10">
+        <slot />
+    </div>
+    <div data-track class="journey-track" aria-hidden="true"></div>
 </section>
 
 <style>
@@ -88,6 +149,25 @@
         border-radius: 9999px;
         background: #141414;
         vertical-align: middle;
+    }
+
+    .journey-bin {
+        translate: -50% 0;
+        font-size: 12px;
+        color: #141414;
+    }
+
+    /* Hero liegt über der Stage und scrollt normal weg; danach folgt die gepinnte Strecke */
+    .journey-hero {
+        margin-top: -100vh;
+    }
+    .journey-track {
+        height: 480vh;
+    }
+    @media (min-width: 768px) {
+        .journey-track {
+            height: 540vh;
+        }
     }
 
     /* Heller Schleier hinter dem Text, damit Lesbarkeit über dem Graphen bleibt */
@@ -209,6 +289,18 @@
     /* Ohne Bewegung oder ohne WebGL: Canvas als Standbild, Texte darunter untereinander */
     .journey.journey-static {
         height: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .journey.journey-static [data-hero] {
+        order: -1;
+        margin-top: 0;
+        opacity: 1 !important;
+    }
+    .journey.journey-static [data-track],
+    .journey.journey-static [data-waves],
+    .journey.journey-static .journey-bin {
+        display: none;
     }
     .journey.journey-static [data-stage] {
         position: relative;
