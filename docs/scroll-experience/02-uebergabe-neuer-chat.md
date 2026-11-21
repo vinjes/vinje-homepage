@@ -102,3 +102,97 @@ Auftrag: `docs/scroll-experience/03-prompt-neuer-chat.md`.
 - Higgsfield-Connector anmelden, dann Kosten schätzen und freigeben lassen.
 - Unsichtbare Szenen-Buttons (Szene 5) sind per Tab-Taste fokussierbar, auch wenn sie ausgeblendet sind (bestand schon vorher).
 - Commit (nur auf ausdrücklichen Wunsch).
+
+---
+
+## Update 3 (abgeschlossen 2026-11-21)
+
+Auftrag: `04-prompt-neuer-chat.md`, Fortsetzung `06-prompt-neuer-chat.md`. Plan und Dopplungen: `05-plan-update-3.md`. Zusätzlich auf Wunsch des Nutzers: eigene backcall-Station. Nichts committet.
+
+### Was wo läuft
+
+- `src/scroll/timeline.ts`: zentrale Zeitachse `TIMELINE` (25 Segmente), `P`, `at`, `local`, `span`, `easeSegment`, `bump` (Effekt nur im Übergang), `segStyle` (Mindesthöhe der Blöcke im unteren Teil). Segmente mit `flow: true` sind Inhalt im normalen Fluss.
+- `src/scroll/journey.ts`: Bühne, Kamera, innerer Graph, Umschläge, Stern, Detail-Zooms, unterer Teil, Overlays, Scroll → p.
+- `src/scroll/world.ts`: äußere Welt (Desktop 4.000, mobil 1.200 Knoten in 12 bzw. 7 Cluster-Gruppen à 5 Clustern), Kanten und Datenströme komplett im Vertex-Shader (Uniform `uP`, Attribute Start/Ziel/Reveal/Form).
+- `src/scroll/voice.ts`: backcall-Planet (Partikelkugel mit Tonspur-Schwingung, zwei Orbitringe mit Mond, Signalringe, ein großer Signalring im Übergang, gepunkteter Signalpfad).
+- `src/scroll/star.ts`: vinje-Stern (Pfad aus dem Header-Logo) als Punktwolke.
+- `src/components/Journey.astro`: Stage mit Hero-Station, Szenen, Labels, Schleiern; Strecke (`data-track`); Slot `lower` für den unteren Teil.
+- `src/components/Hero.astro`: nur noch „Vincent & Jesse“, H1, Subline, „Erstgespräch vereinbaren“.
+- `src/pages/index.astro`: Services, Process, About, Contact liegen im Slot `lower` der Journey.
+- `src/components/Services.astro` (vier Stationen), `ServiceChain.astro` (neu, Ketten aus der Pipeline-Karte), `Process.astro`, `About.astro`, `Contact.astro`: Blöcke tragen `data-seg` und `class="journey-block"`.
+- `scripts/check-timeline.ts`: Selbsttest (Ausnahme Hero unter 100vh begründet, flow-Segmente am Ende).
+
+### Technik in Kürze
+
+- Die Stage ist über die ganze Section sticky (ein WebGL-Kontext bis zum Seitenende). Die Strecke beginnt mit `margin-top: -100vh` beim ersten Pixel.
+- Unterer Teil: Inhalt scrollt nativ über der Bühne (`.journey-lower`, z-index 10). Sein Fortschritt zählt an der Bildschirmmitte; die Lücke `.journey-tail` (50vh) schließt an die Strecke an. Kamera-Keyframes der flow-Stationen liegen bei 30 % und 70 % des Blocks. Ein `ResizeObserver` misst neu, wenn sich Höhen ändern (Kalender, Formular, Bilder).
+- Segment-Positionen werden per `getBoundingClientRect` relativ zur Section gemessen (Blöcke sind verschachtelt).
+- Effekte nur in Übergängen: Dolly-Zoom (`to-flood`), Rolle (`to-sort`, `to-flow`, `to-project`, Wechsel zwischen den Leistungen), Kippen um 90° über den Fächern (`to-graph`), alle Kanten leuchten auf (`to-email`), Welt dreht 60° hin und zurück (`to-flow`), Signalring durch die ganze Szene (`to-call`), umgekehrter Dolly-Zoom beim großen Herauszoom (`to-result`).
+- Detail-Zooms: Umgebung (innerer Graph, Welt, linker Schleier) tritt zurück, solange eine Detail-Station sichtbar ist.
+- Im unteren Teil steht die Welt still (Drehung um den Ursprung würde ferne Motive verschieben); die Kamera trägt die Bewegung.
+
+### Stationen (final)
+
+Halt = Scroll-Strecke der Station, Übergang = Strecke danach. vh Desktop / mobil. Unterer Teil: Mindesthöhe, der Inhalt bestimmt die Länge.
+
+| # | Station | Inhalt | Halt | Übergang danach | Effekt im Übergang |
+|---|---|---|---|---|---|
+| 1 | `hero` | Stern aus Partikeln, „Vincent & Jesse“, H1, Subline, CTA | 40 / 25 | `to-flood` 80 / 50 | Stern zerfällt, Umschläge lösen sich daraus; H1 zoomt, Subline gleitet weg; Dolly-Zoom |
+| 2 | `flood` | 01 Informationsflut | 100 / 70 | `to-sort` 60 / 40 | Umschläge in vier Fächer, Rolle |
+| 3 | `sort` | 02 vinje Engine, Fächer, Zeile „backmail, backcall & Multi-Agenten“ | 100 / 70 | `to-graph` 80 / 50 | Kamera kippt über die Fächer (Blick von oben), E-Mails stürzen in den Graphen, Eintauchen |
+| 4 | `graph` | 03 Knowledge Graph, Cluster-Labels | 100 / 70 | `to-email` 50 / 35 | alle Kanten leuchten auf, Zurückziehen, Zoom auf Email |
+| 5 | `zoom-email` | Email: Absender, Betreff, Kategorie, verknüpfter Kunde, Projekt | 100 / 60 | `to-flow` 50 / 35 | Herauszoom mit Rolle, Welt dreht 60° |
+| 6 | `workflow` | 04 Eine Anfrage, sechs Schritte | 140 / 100 | `to-call` 70 / 45 | Kamera schwenkt nach außen, backcall-Planet erscheint, Signalring läuft durch die Szene |
+| 7 | `call` | 05 backcall: Ein Anruf, fünf Schritte; Signalpfad Planet → Call → Knowledge → Task → Employee | 140 / 100 | `to-project` 50 / 35 | Stimme wird leiser, Kamera rollt zum Project-Knoten |
+| 8 | `zoom-project` | Project: Kunde, Angebot, Termin, Aufgabe, Dokument, Rechnung | 100 / 60 | `to-result` 100 / 60 | großer Herauszoom (umgekehrter Dolly-Zoom), Welt entfaltet sich von innen nach außen |
+| 9 | `result` | 06 Ergebnis, Welt im Ganzen, „Produktives System · Kundensystem“: backmail, backcall | 100 / 70 | `to-services` 80 / 50 | Flug zur ersten Cluster-Gruppe |
+| 10 | `services-ki` (`#leistungen`) | Leistungen-Kopf, 01 KI-Automatisierung | min. 110 / 80 | – | Gruppe 1 rechts im Bild |
+| 11 | `services-ml` | 02 Machine Learning + Kette (Input → Engine → Ergebnis) | min. 110 / 80 | – | Rolle, Gruppe 2 |
+| 12 | `services-bi` | 03 Datenanalyse & BI + Kette | min. 110 / 80 | – | Rolle, Gruppe 3 |
+| 13 | `stack-eu` | Kern-Stack, „100 % DSGVO-konform: Europäische Hoster & Mistral LLMs“ | min. 90 / 70 | – | Blick auf die ganze Welt |
+| 14 | `process` (`#ansatz`) | Von der Idee zum System, 01–04, Preismodell | min. 160 / 110 | – | Pfad zeichnet sich durch vier Knoten (Labels 01–04) |
+| 15 | `about` (`#ueber-uns`) | Zitat, Text, Werte, Vincent & Jesse | min. 120 / 90 | – | zwei verbundene Knoten, Fotos tauchen auf (Desktop) |
+| 16 | `contact` (`#kontakt`) | Formular / Calendly, direkter Kontakt | min. 120 / 100 | – | Kamera fährt zum Kern, Datenströme beruhigen sich |
+
+Strecke bis einschließlich `to-services`: Desktop 1.540vh, mobil 1.025vh. Dazu der untere Teil mit Inhaltshöhe.
+
+### backcall-Station (neu)
+
+- Platz in der Erzählung: nach dem E-Mail-Workflow (backmail-Kanal), vor dem Project-Detail. Zweiter Kanal, der im selben Graphen landet; danach nennt das Ergebnis beide Produkte.
+- Texte nach `backcall/README.md` (nimmt Anrufe an, erkennt das Anliegen, Auskunft nach dem Ausweisen, vorläufige Einträge/Formulare/Nachrichten, ein Mensch prüft jeden Fall). Keine Zahlen, keine Kunden.
+- Schritt k leuchtet, wenn der Signalpfad Knoten k erreicht (wie beim Workflow, `data-step` + `stepProgress`).
+- Planet steht desktop rechts neben dem Graphen, mobil darüber. Nach der Station bleibt er als kleiner „Mond“ in der Welt.
+
+### Zusammengelegte Dopplungen (Freigabe 1–13 aus 05)
+
+Umgesetzt wie in der Tabelle in `05-plan-update-3.md`: Logo-SVG im Hero und Logo, „Vincent & Jesse“ und Claim in der About-Karte entfernt; „Leistungen entdecken“ (Hero, Szene 5) und „Erstgespräch vereinbaren“ in Szene 5 entfernt; Calendly-Button in der Kontakt-Box entfernt; Hero-Vertrauensleiste und Pipeline-Karte samt Tab-Script entfernt; EU-Box-Titel geändert; 2. Satz im Process-Intro und Services-Intro entfernt.
+
+### Wo jede Aussage aus Dok 01 §4 jetzt steht
+
+- „Daten. Insights. Automatisierung.“: H1 (Station `hero`), Footer. Subline: `hero`.
+- „Erstgespräch vereinbaren“: `hero` (öffnet Calendly-Modal). „Leistungen entdecken“: entfällt (freigegeben), Nav-Link „Leistungen“ bleibt.
+- „100 % DSGVO-konform (EU-Hoster & Mistral LLMs)“: Box-Titel in `stack-eu`, Chip „100 % EU-Hosting“. „Expertise statt Hype“: Services-H2, About-Wert „Echte Expertise“. „Festpreis ohne Stundensatz“: Preismodell in `process`.
+- Pipeline: Input → Szene `flood`; „backmail, backcall & Multi-Agenten“ → Szene `sort`; „Kundensystem“ → Szene `result`; „Python-Pipelines & Forecasting-Modelle“ → Kette `services-ml`; „SQL-Modellierung, Supabase & Python-ETL“ → Kette `services-bi`. Alle Ergebnisse beider Tabs stehen in den Ketten.
+- Services, Process, About, Contact: alle Texte in ihren Stationen (Calendly über den Tab „Termin direkt buchen“).
+
+### Geprüft (Browser-Pane, Software-Rendering)
+
+- Alle Stationen einzeln angesteuert, Desktop 1440×900 und 800×600, mobil 375×812. Kein horizontaler Überlauf. Mobil passt der Hero in eine Bildschirmhöhe.
+- Reduced Motion (matchMedia überschrieben, Section geklont, neu gemountet): statisch, Hero zuerst, alle Szenen sichtbar, Blöcke ohne Mindesthöhe.
+- Tastatur: vom Hero-Button springt Tab direkt in den unteren Teil (ausgeblendete Szenen sind nicht erreichbar). Anker-Links landen auf ihren Sections.
+- Konsole ohne Fehler, `npm run build` läuft, `node scripts/check-timeline.ts` grün.
+
+### Nicht geprüft
+
+- Scroll-Gefühl auf echter Hardware (Trackpad, Mausrad, Touch) und echte Bildrate auf einer GPU; die Testumgebung rendert mit ca. 2 Bildern pro Sekunde.
+- Formular-Versand und Calendly-Embed im neuen Layout nur sichtbar geprüft, nicht abgeschickt.
+- Safari/iOS (URL-Leiste ändert `innerHeight`; die 50vh-Lücke kann dort minimal springen).
+
+### Offene Entscheidungen
+
+1. Einrasten: nur Dämpfung oder zusätzlich JS-Einrasten für Mausrad/Trackpad (erst auf echter Hardware entscheiden).
+2. Detail-Stationen nur mit Labels (so umgesetzt).
+3. Unterer Teil im normalen Fluss über der Bühne (so umgesetzt).
+4. Länge: Detail-Stationen 100vh oder auf 80vh kürzen.
+5. backcall-Texte: aus dem backcall-README abgeleitet, bitte fachlich gegenlesen (besonders „einfache Fragen direkt beantwortet“ und „Nach dem Ausweisen: Auskunft aus euren Daten“).
+6. Die Fotos an den Über-uns-Knoten sind dekorative Duplikate der Bilder in den Karten (nur Desktop). Behalten oder weglassen?

@@ -114,20 +114,23 @@ body {
     box-shadow: 0 18px 40px -15px rgba(24, 24, 24, 0.08);
 }
 
-/* Tab-Übergänge im Live-Pipeline-Widget */
-.pipeline-fade {
-    animation: fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Unterer Teil der Scroll-Experience: ein Block je Station (data-seg), Mindesthöhe aus timeline.ts (segStyle) */
+.journey-block {
+    min-height: var(--seg-m);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
+@media (min-width: 768px) {
+    .journey-block {
+        min-height: var(--seg-d);
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+}
+
+/* Ohne Bewegung: Blöcke so hoch wie ihr Inhalt */
+.journey-static .journey-block {
+    min-height: 0;
 }
 
 /* Scroll-Reveal Klassen */

@@ -1,6 +1,11 @@
+---
+import { segStyle } from '../scroll/timeline';
+---
 <!-- ==================== 4. ARBEITSWEISE / PROZESS ==================== -->
-<section id="ansatz" class="py-20 sm:py-28 border-b border-silverBorder bg-white/45">
-    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+<!-- Station process über der Bühne: rechts zeichnet sich ein Pfad durch vier Knoten (01–04) -->
+<section id="ansatz" data-seg="process" class="journey-block py-20 sm:py-28" style={segStyle('process')}>
+    <div class="max-w-6xl w-full mx-auto px-5 sm:px-8">
+        <div class="max-w-3xl">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
             <div class="max-w-xl">
                 <span class="text-xs font-mono uppercase tracking-widest text-inkMuted">Arbeitsweise &amp; Konditionen</span>
@@ -9,12 +14,12 @@
                 </h2>
             </div>
             <p class="text-sm text-inkMuted max-w-md leading-relaxed">
-                Strukturiert, transparent und ohne monatelange Theorie-Schleifen. Wir arbeiten ausschließlich mit klaren Projekt-Festpreisen statt unberechenbarer Stundensätze.
+                Strukturiert, transparent und ohne monatelange Theorie-Schleifen.
             </p>
         </div>
 
         <!-- 4 Schritte Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12 sm:mt-16">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-10 sm:mt-12">
             <!-- Schritt 01 -->
             <div class="p-6 rounded-2xl bg-paper border border-silverBorder relative reveal">
                 <div class="font-mono text-xs text-inkMuted mb-4">SCHRITT 01</div>
@@ -67,6 +72,7 @@
                 <span>Projektumfang besprechen</span>
                 <span>→</span>
             </a>
+        </div>
         </div>
     </div>
 </section>

@@ -16,13 +16,16 @@ import CalendlyModal from '../components/CalendlyModal.astro';
 <Layout>
     <Header />
     <main>
+        <!-- Eine Bühne bis zum Seitenende: Hero und Erzählung oben, darunter Leistungen bis Kontakt über demselben Graphen -->
         <Journey>
             <Hero />
+            <Fragment slot="lower">
+                <Services />
+                <Process />
+                <About />
+                <Contact />
+            </Fragment>
         </Journey>
-        <Services />
-        <Process />
-        <About />
-        <Contact />
     </main>
     <Footer />
     <LegalModal />
