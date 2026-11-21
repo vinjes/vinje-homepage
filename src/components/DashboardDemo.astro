@@ -1,0 +1,89 @@
+---
+import { forecastChart } from '../demo/chart';
+// Mini-Demo zu Stufe 03: ein Dashboard, das Automatisierung (Stufe 01) und Prognose (Stufe 02) zeigt. Alle Zahlen sind Beispieldaten.
+type Range = { kpis: [string, string, string, boolean, string][]; ist: number[]; fc: number[]; cats: [string, number][] };
+const DATA: Record<'week' | 'month', Range> = {
+    week: {
+        kpis: [
+            ['Automatisch beantwortet', '1.284', '+12 %', true, 'aus Stufe 01'],
+            ['Ø Bearbeitungszeit', '4 min', '−38 %', true, 'aus Stufe 01'],
+            ['Prognose nächste Woche (Stk.)', '3.420', '±6 %', false, 'aus Stufe 02'],
+        ],
+        ist: [62, 58, 71, 66, 74, 69, 80, 77],
+        fc: [77, 82, 79, 86, 90],
+        cats: [['Anfrage', 42], ['Angebot', 23], ['Rechnung', 18], ['Support', 17]],
+    },
+    month: {
+        kpis: [
+            ['Automatisch beantwortet', '5.310', '+9 %', true, 'aus Stufe 01'],
+            ['Ø Bearbeitungszeit', '5 min', '−31 %', true, 'aus Stufe 01'],
+            ['Prognose nächster Monat (Stk.)', '14.800', '±8 %', false, 'aus Stufe 02'],
+        ],
+        ist: [48, 55, 52, 61, 59, 66, 70, 68],
+        fc: [68, 72, 75, 74, 80],
+        cats: [['Anfrage', 38], ['Angebot', 27], ['Rechnung', 20], ['Support', 15]],
+    },
+};
+const ranges = (['week', 'month'] as const).map((k) => ({ k, r: DATA[k], c: forecastChart(DATA[k].ist, DATA[k].fc, { lo: 45, hi: 105 }) }));
+---
+<figure data-dash class="reveal rounded-2xl bg-white border border-silverBorder shadow-[0_24px_60px_-24px_rgba(20,20,20,0.25)] p-4 sm:p-6 text-ink">
+    <div class="flex items-center justify-between gap-3">
+        <div>
+            <p class="font-display text-sm font-semibold">Live-Dashboard</p>
+            <p class="text-[11px] text-inkMuted">Demo mit Beispieldaten</p>
+        </div>
+        <div class="flex p-0.5 rounded-lg bg-paper border border-silverBorder text-xs" role="group" aria-label="Zeitraum">
+            <button type="button" data-set="week" aria-pressed="true" class="dash-tab px-2.5 py-1 rounded-md">Woche</button>
+            <button type="button" data-set="month" aria-pressed="false" class="dash-tab px-2.5 py-1 rounded-md">Monat</button>
+        </div>
+    </div>
+
+    {ranges.map(({ k, r, c }) => (
+        <div data-only={k} hidden={k !== 'week'}>
+            <div class="grid grid-cols-3 gap-2 mt-4">
+                {r.kpis.map(([label, value, delta, good, src]) => (
+                    <div class="rounded-xl bg-paper border border-silverBorder p-3">
+                        <p class="text-[11px] leading-tight text-inkMuted">{label}</p>
+                        <p class="font-display text-base sm:text-lg font-semibold mt-1">{value}</p>
+                        <p class:list={['text-[11px] font-medium', good ? 'text-emerald-700' : 'text-inkMuted']}>{delta}</p>
+                        <span class="demo-src">{src}</span>
+                    </div>
+                ))}
+            </div>
+
+            <div class="mt-4 rounded-xl border border-silverBorder p-3">
+                <div class="flex items-center justify-between text-[11px] text-inkMuted">
+                    <span>Absatz</span>
+                    <span class="flex items-center gap-3">
+                        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-ink"></span>Ist</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-blue-600"></span>Prognose</span>
+                    </span>
+                </div>
+                <svg viewBox={`0 0 ${c.W} ${c.H}`} class="w-full h-auto mt-2" role="img" aria-label="Absatz: Ist-Werte und Prognose (Beispieldaten)">
+                    {[0.25, 0.5, 0.75].map((f) => <line x1="0" x2={c.W} y1={c.H * f} y2={c.H * f} stroke="#EFECE4" />)}
+                    <polygon points={c.band} fill="#2563EB" fill-opacity="0.12" />
+                    <polyline points={c.ist} fill="none" stroke="#141414" stroke-width="2" stroke-linejoin="round" class="dash-draw" />
+                    <polyline points={c.fc} fill="none" stroke="#2563EB" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round" />
+                    <circle cx={c.last[0]} cy={c.last[1]} r="4" fill="#2563EB" />
+                </svg>
+            </div>
+
+            <div class="mt-3 rounded-xl border border-silverBorder p-3">
+                <p class="text-[11px] text-inkMuted">Eingänge nach Kategorie (automatisch sortiert) <span class="demo-src">aus Stufe 01</span></p>
+                <div class="mt-2 space-y-1.5">
+                    {r.cats.map(([name, pct]) => (
+                        <div class="grid grid-cols-[4.5rem_1fr_2.5rem] items-center gap-2 text-[11px]">
+                            <span>{name}</span>
+                            <span class="h-2 rounded-full bg-paper overflow-hidden"><span class="dash-bar block h-full rounded-full bg-ink" style={`width: ${pct * 2}%`}></span></span>
+                            <span class="text-right text-inkMuted">{pct} %</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    ))}
+</figure>
+
+<script>
+    import '../demo/tabs';
+</script>

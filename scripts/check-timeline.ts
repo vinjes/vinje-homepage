@@ -17,20 +17,22 @@ const stations = TIMELINE.filter((s) => s.kind === 'station');
 const moves = TIMELINE.filter((s) => s.kind === 'move');
 for (const s of stations) for (const m of moves) assert.ok(rate(s) < rate(m), `${s.id} ist kein Plateau gegenüber ${m.id}`);
 
-// Verweildauer: Desktop mindestens 100vh, mobil kürzer, aber vorhanden.
-// Ausnahme hero: erstes Bild, gepinnt und bewusst kurz (40/25vh), damit die Bewegung sofort beginnt (Plan 05).
+// Verweildauer: Desktop mindestens 30vh, mobil kürzer, aber vorhanden; die ganze gepinnte Strecke höchstens 200vh (kurzer Auftakt).
+// Ausnahme hero: erstes Bild, gepinnt und bewusst kurz, damit die Bewegung sofort beginnt (Plan 05).
 // Unterer Teil (flow): vh ist Mindesthöhe, der Inhalt bestimmt die echte Länge.
 for (const s of stations) {
   assert.ok(s.vh[1] > 0 && s.vh[1] <= s.vh[0], `${s.id}: mobil länger als Desktop`);
-  if (s.id !== 'hero' && !s.flow) assert.ok(s.vh[0] >= 100, `${s.id}: Haltestrecke unter 100vh`);
+  if (s.id !== 'hero' && !s.flow) assert.ok(s.vh[0] >= 30, `${s.id}: Haltestrecke unter 30vh`);
 }
+const pinned = TIMELINE.filter((s) => !s.flow).reduce((sum, s) => sum + s.vh[0], 0);
+assert.ok(pinned <= 200, `gepinnte Strecke ${pinned}vh zu lang`);
 assert.equal(TIMELINE[0].id, 'hero');
 // flow-Segmente stehen geschlossen am Ende (sie liegen im DOM nach der Strecke), davor ein Übergang
 const firstFlow = TIMELINE.findIndex((s) => s.flow);
 assert.ok(TIMELINE.slice(firstFlow).every((s) => s.flow && s.kind === 'station'), 'flow-Segmente nicht am Ende');
 assert.equal(TIMELINE[firstFlow - 1].kind, 'move');
-assert.equal(segStyle('process'), '--seg-d: 160vh; --seg-m: 110vh;');
-assert.ok(Math.abs(bump('call', at('call', 0.5)) - 1) < 1e-9 && Math.abs(bump('call', at('call', 0))) < 1e-9);
+assert.equal(segStyle('process'), '--seg-d: 80vh; --seg-m: 60vh;');
+assert.ok(Math.abs(bump('to-graph', at('to-graph', 0.5)) - 1) < 1e-9 && Math.abs(bump('to-graph', at('to-graph', 0))) < 1e-9);
 
 // Dämpfung: Übergänge laufen monoton von 0 bis 1 und kommen mit Stationstempo an der Station an
 const near = (a: number, b: number, eps = 1e-6) => Math.abs(a - b) < eps;

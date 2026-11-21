@@ -1,0 +1,74 @@
+---
+// Datenleitung von der vorherigen Demo in diese: wächst beim Scrollen (CSS-Scroll-Animation), danach läuft ein Datenpunkt hinab
+const { label } = Astro.props as { label: string };
+---
+<div class="demo-link hidden lg:flex" aria-hidden="true">
+    <span class="demo-link-line"><span class="demo-link-dot"></span></span>
+    <span class="demo-link-chip">{label}</span>
+</div>
+
+<style>
+    /* Sitzt über der Demo-Karte (Eltern: relative), ohne das Layout zu verschieben */
+    .demo-link {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        height: 7rem;
+        flex-direction: column;
+        align-items: center;
+        translate: -50% 0;
+    }
+    .demo-link-line {
+        position: relative;
+        flex: 1;
+        width: 2px;
+        background: repeating-linear-gradient(to bottom, #141414 0 5px, transparent 5px 9px);
+        transform-origin: top;
+        animation: link-grow linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 80%;
+    }
+    .demo-link-dot {
+        position: absolute;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        margin-left: -4px;
+        border-radius: 9999px;
+        background: #2563EB;
+        animation: link-dot 1.6s ease-in infinite;
+    }
+    .demo-link-chip {
+        margin: 0.375rem 0;
+        padding: 0.25rem 0.625rem;
+        border-radius: 9999px;
+        background: #141414;
+        color: #F7F6F2;
+        font-size: 0.6875rem;
+        white-space: nowrap;
+        animation: link-chip linear both;
+        animation-timeline: view();
+        animation-range: entry 60% entry 100%;
+    }
+    @keyframes link-grow {
+        from { transform: scaleY(0); }
+    }
+    @keyframes link-chip {
+        from { opacity: 0; translate: 0 6px; }
+    }
+    @keyframes link-dot {
+        from { top: 0; opacity: 0; }
+        20% { opacity: 1; }
+        to { top: 100%; opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .demo-link-line,
+        .demo-link-chip,
+        .demo-link-dot {
+            animation: none;
+        }
+        .demo-link-dot {
+            display: none;
+        }
+    }
+</style>

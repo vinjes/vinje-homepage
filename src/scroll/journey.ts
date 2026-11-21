@@ -1,15 +1,13 @@
 import * as THREE from 'three';
 import { starPoints } from './star';
 import { P, TIMELINE, at, bump, easeSegment, local, span } from './timeline';
-import { buildVoice, circle } from './voice';
 import { SERVICE_GROUPS, buildWorld } from './world';
 
 /*
  * Scroll-Experience: Ein sticky Canvas, dessen Zustand allein vom Scroll-Fortschritt p (0..1) abhängt.
  * Vorwärts und rückwärts laufen dadurch identisch. Zeitachse und Stationen: timeline.ts.
- * Ablauf: vinje-Stern → E-Mails → Fächer → Knowledge Graph → Detail Email → Workflow → backcall → Detail Project
- * → Welt aus Clustern → unterer Teil (Leistungen, Ablauf, Über uns, Kontakt) über derselben Bühne.
- * Eigene Ebenen je Station: Stern (hier), Welt (world.ts), backcall (voice.ts), Detail-Szenen (makeDetail).
+ * Ablauf: vinje-Stern → Knowledge Graph → Welt aus Clustern → unterer Teil (Leistungen, Ablauf, Über uns, Kontakt)
+ * über derselben Bühne. Ebenen: Stern und innerer Graph (hier), äußere Welt (world.ts).
  */
 
 type Vec3 = [number, number, number];
@@ -19,28 +17,12 @@ interface Pose {
 }
 
 const FOV = 42;
-const CLUSTER_NAMES = ['Customer', 'Email', 'Project', 'Invoice', 'Knowledge', 'Task', 'Call', 'Document', 'Employee'];
-const K = CLUSTER_NAMES.length;
+const K = 9; // Cluster im inneren Graphen
 // Glättung des Scroll-Fortschritts pro Sekunde (bildratenunabhängig)
 const P_DAMP = 7;
-// Dauer (in p) einzelner Bewegungen als Anteil ihres Übergangs: Umschlag fliegt ein, wird einsortiert, läuft in den Graphen
-const ENV_FLY = span('to-flood') * 0.35;
-const ENV_SORT = span('to-sort') * 0.45;
-const ENV_MERGE = span('to-graph') * 0.4;
 // Einblenden eines Graph-Knotens bzw. Wachsen einer Kante
 const RV = span('to-graph') * 0.3;
-// Anteil einer Station, über den Zeilen bzw. Workflow-Schritte freischalten (danach steht alles)
-const REVEAL_END = 0.5;
-const STEPS_END = 0.7;
-// E-Mail-Fächer (Anfrage, Angebot, Rechnung, Support) → Ziel-Cluster (Customer, Project, Invoice, Knowledge)
-const BIN_CLUSTER = [0, 2, 3, 4];
-// Signalpfad der backcall-Station: Planet → Call → Knowledge → Task → Employee
-const CALL_CLUSTERS = [6, 4, 5, 8];
-const ENV_SIZE = 0.42;
-// Feste Orte in der Welt: backcall-Planet, Ablauf-Pfad, Vincent & Jesse
-const VOICE_DESK = new THREE.Vector3(9.5, 1.6, 4); // rechts neben dem Graphen, Signal läuft nach links hinein
-const VOICE_MOBILE = new THREE.Vector3(1.5, 8.5, 2); // mobil über dem Graphen
-const VOICE_R = 1.5;
+// Feste Orte in der Welt: Ablauf-Pfad, Vincent & Jesse
 const PROCESS_C = new THREE.Vector3(-8, -27, 10);
 const ABOUT_C = new THREE.Vector3(14, -30, 6);
 const INK = new THREE.Color('#141414');
@@ -79,8 +61,6 @@ interface Graph {
   pairs: [number, number][];
   edges: Uint16Array; // Knotenpaare, nach Erscheinen sortiert (orderEdges)
   edgeReveal: Float32Array; // aufsteigend sortiert
-  centers: THREE.Vector3[];
-  path: number[]; // Workflow-Kette aus 6 Knoten
 }
 
 function buildGraph(count: number, seed = 42): Graph {
@@ -177,27 +157,9 @@ function buildGraph(count: number, seed = 42): Graph {
     for (const o of order.slice(0, 2)) add(subHub[c * 2 + (o % 2)], subHub[o * 2 + (c % 2)]);
   }
 
-  // Workflow-Pfad: zufällige Kette über Kanten, 6 Knoten, Start an einem Hub
-  const adj: number[][] = Array.from({ length: count }, () => []);
-  pairs.forEach(([a, b]) => {
-    adj[a].push(b);
-    adj[b].push(a);
-  });
-  let path: number[] = [];
-  for (let attempt = 0; attempt < 300 && path.length < 6; attempt++) {
-    const p = [subHub[Math.floor(rand() * subHub.length)]];
-    while (p.length < 6) {
-      const opts = adj[p[p.length - 1]].filter((n) => !p.includes(n));
-      if (!opts.length) break;
-      p.push(opts[Math.floor(rand() * opts.length)]);
-    }
-    if (p.length === 6) path = p;
-  }
-  if (!path.length) path = [0, 1, 2, 3, 4, 5];
-
   return {
     count, final, scatter, size, tone, ring, reveal, cluster, pairs,
-    edges: new Uint16Array(0), edgeReveal: new Float32Array(0), centers, path,
+    edges: new Uint16Array(0), edgeReveal: new Float32Array(0),
   };
 }
 
@@ -216,24 +178,16 @@ function orderEdges(g: Graph) {
 }
 
 // Kamera: feste Pose je Station (ruhiges Bild), Übergänge interpolieren zwischen den Stationen.
-// Fehlende Stationen (Detail-Zooms, Workflow, backcall, unterer Teil) werden beim Start aus Graph und Welt berechnet.
+// Stationen des unteren Teils werden beim Start aus der Welt berechnet.
 const POSES: Record<string, Pose> = {
   hero: { pos: [0, 0.4, 15.5], look: [0, 0, 0] },
-  flood: { pos: [0.3, 0.3, 13], look: [0.4, 0, 0] }, // E-Mails kommen an
-  sort: { pos: [0, 0.2, 11.5], look: [0, 0, 0] }, // Fächer im Bild
-  graph: { pos: [2.6, -0.8, 6], look: [1.2, -0.4, 0] }, // im Graphen
-  result: { pos: [-24, 5, 118], look: [-24, 0, 0] }, // die ganze Welt
-  'stack-eu': { pos: [-16, 4, 100], look: [-16, 0, 0] },
+  graph: { pos: [3.5, 0.6, 14], look: [0.5, 0, 0] }, // der ganze Graph neben dem Hero-Text
   contact: { pos: [-3.5, 0.6, 24], look: [-3.5, 0, 0] }, // zurück zum Kern
 };
 // Zwischenpunkte in Übergängen (Segment, Anteil 0..1, Pose)
 const VIAS: { at: string; t: number; pose: Pose }[] = [
-  { at: 'to-graph', t: 0.35, pose: { pos: [3.3, 14, 2.2], look: [3.3, 0, 0] } }, // Szene kippt um 90°: Blick von oben auf die Fächer
-  { at: 'to-graph', t: 0.72, pose: { pos: [-1.8, 3.2, 7.5], look: [-0.5, 0, 0] } }, // Eintauchen in den Graphen
-  { at: 'to-email', t: 0.4, pose: { pos: [3.5, 0.6, 14], look: [0.5, 0, 0] } }, // zurückziehen, alle Kanten leuchten auf
-  { at: 'to-flow', t: 0.5, pose: { pos: [-4, 2.5, 15], look: [0, 0, 0] } }, // Herauszoom mit Rolle
-  { at: 'to-result', t: 0.45, pose: { pos: [-8, 2, 42], look: [-7, 0, 0] } }, // großer Herauszoom
-  { at: 'to-services', t: 0.5, pose: { pos: [-22, 14, 72], look: [-28, 6, -8] } },
+  { at: 'to-graph', t: 0.6, pose: { pos: [-1.8, 3.2, 7.5], look: [-0.5, 0, 0] } }, // Eintauchen in den Graphen
+  { at: 'to-services', t: 0.5, pose: { pos: [-22, 14, 72], look: [-28, 6, -8] } }, // großer Herauszoom in die Welt
 ];
 
 let KF: { p: number; pos: Vec3; look: Vec3 }[] = [];
@@ -281,45 +235,12 @@ const dotTexture = () =>
     g.fillRect(0, 0, 64, 64);
   });
 
-// Briefumschlag: weiße Fläche, Ink-Kontur, Lasche
-const envelopeTexture = () =>
-  canvasTexture((g) => {
-    g.lineJoin = 'round';
-    g.lineWidth = 5;
-    g.strokeStyle = '#141414';
-    g.fillStyle = '#FFFFFF';
-    g.beginPath();
-    g.roundRect(14, 32, 100, 66, 9);
-    g.fill();
-    g.stroke();
-    g.beginPath();
-    g.moveTo(20, 38);
-    g.lineTo(64, 70);
-    g.lineTo(108, 38);
-    g.stroke();
-  }, 128);
-
-// Punkt-Sprites mit Größe und Alpha pro Punkt
-const SPRITE_VERTEX = `
-  attribute float aSize;
-  attribute float aAlpha;
-  uniform float uPx;
-  varying float vA;
-  void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = aSize * uPx / -mv.z;
-    gl_Position = projectionMatrix * mv;
-    vA = aAlpha;
-  }`;
-
 export function mountJourney(section: HTMLElement | null) {
   if (!section) return;
   const stage = section.querySelector<HTMLElement>('[data-stage]');
   const canvas = section.querySelector<HTMLCanvasElement>('[data-canvas]');
   if (!stage || !canvas) return;
-  const waves = section.querySelector<HTMLElement>('[data-waves]');
   const lowerVeil = section.querySelector<HTMLElement>('[data-veil-lower]');
-  const veil = section.querySelector<HTMLElement>('[data-veil]');
   const heroBits = (['by', 'h1', 'sub'] as const).map((k) => section.querySelector<HTMLElement>(`[data-hero-${k}]`));
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -333,7 +254,7 @@ export function mountJourney(section: HTMLElement | null) {
     section.classList.add('journey-static');
     return;
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
@@ -347,14 +268,6 @@ export function mountJourney(section: HTMLElement | null) {
   const nodePos = new Float32Array(N * 3);
   const nodeSize = new Float32Array(N);
   const nodeAlpha = new Float32Array(N);
-  const pathSet = new Set(graph.path);
-  const hubOfCluster = (c: number) => {
-    for (let i = 0; i < N; i++) if (graph.ring[i] && graph.cluster[i] === c) return i;
-    return 0;
-  };
-  const nodeVec = (i: number) => new THREE.Vector3().fromArray(graph.final, i * 3);
-  const callHubs = CALL_CLUSTERS.map(hubOfCluster);
-  const VOICE_C = mobile ? VOICE_MOBILE : VOICE_DESK;
 
   // vinje-Stern aus Partikeln: steht im ersten Bild und zerfällt im ersten Übergang (Positionen im Vertex-Shader)
   const S = mobile ? 700 : 1600;
@@ -425,69 +338,9 @@ export function mountJourney(section: HTMLElement | null) {
   );
   world.add(starGroup);
 
-  // E-Mails: entstehen aus dem Stern, werden in vier Fächer sortiert und laufen dann in den Graphen
-  const M = mobile ? 32 : 64;
-  const perCat = M / 4;
-  const bins = mobile
-    ? { x: [-2.4, -0.8, 0.8, 2.4], y: 1.9, cols: 2, sp: 0.52 }
-    : { x: [0.6, 2.4, 4.2, 6.0], y: 0.3, cols: 4, sp: 0.38 };
-  const envBase = mobile ? 0.5 : ENV_SIZE;
-  const rows = Math.ceil(perCat / bins.cols);
-  const binTop = bins.y + (rows / 2) * bins.sp * 0.8 + 0.35;
-  const clusterNodes = BIN_CLUSTER.map((c) => [...Array(N).keys()].filter((i) => graph.cluster[i] === c && !graph.ring[i]));
-  const erand = mulberry32(11);
-  const envStart = new Float32Array(M * 3);
-  const envChaos = new Float32Array(M * 3);
-  const envBin = new Float32Array(M * 3);
-  const envPh = new Float32Array(M);
-  const envIn = new Float32Array(M);
-  const envSort = new Float32Array(M);
-  const envMerge = new Float32Array(M);
-  const envTarget = new Uint16Array(M);
-  const stride = Math.floor(S / M);
-  for (let i = 0; i < M; i++) {
-    const cat = i % 4;
-    const k = Math.floor(i / 4);
-    const j = i * 3;
-    for (let c = 0; c < 3; c++) envStart[j + c] = starFrom[i * stride * 3 + c] + starC.getComponent(c);
-    envChaos[j] = mobile ? (erand() * 2 - 1) * 3.6 : -3 + erand() * 10.5;
-    envChaos[j + 1] = mobile ? -1.5 + erand() * 6 : (erand() * 2 - 1) * 4.2;
-    envChaos[j + 2] = (erand() * 2 - 1) * 2.5;
-    const col = k % bins.cols;
-    const row = Math.floor(k / bins.cols);
-    envBin[j] = bins.x[cat] + (col - (bins.cols - 1) / 2) * bins.sp;
-    envBin[j + 1] = bins.y + ((rows - 1) / 2 - row) * bins.sp * 0.8;
-    envPh[i] = erand() * Math.PI * 2;
-    // Umschläge lösen sich im ersten Übergang aus dem Stern; an der ersten Station sind alle angekommen
-    envIn[i] = lerp(at('to-flood', 0.05), at('to-flood', 0.6), erand());
-    // Sortieren im Übergang, gestaffelt nach Reihe; an der Fächer-Station liegen alle still
-    envSort[i] = lerp(at('to-sort', 0), at('sort', 0) - ENV_SORT, (k / perCat) * 0.7 + erand() * 0.3);
-    envMerge[i] = lerp(at('to-graph', 0), at('graph', 0) - ENV_MERGE - RV * 0.2, erand());
-    // Die erste Anfrage wird später zum Startknoten des Workflows
-    const pool = clusterNodes[cat];
-    envTarget[i] = i === 0 ? graph.path[0] : pool[k % pool.length];
-    graph.reveal[envTarget[i]] = Math.min(graph.reveal[envTarget[i]], envMerge[i] + ENV_MERGE * 0.75);
-  }
   orderEdges(graph);
 
-  // Kamera-Stationen, die von Graph und Welt abhängen
-  const shift = mobile ? 0 : 2.4; // Desktop: Motiv rechts neben dem Text
-  const lift = mobile ? -1.6 : 0; // Mobil: Motiv über dem Text
-  const frame = (pts: THREE.Vector3[], minDist: number, k: number): Pose => {
-    const c = new THREE.Vector3();
-    for (const v of pts) c.add(v);
-    c.divideScalar(pts.length);
-    let ext = 0;
-    for (const v of pts) ext = Math.max(ext, c.distanceTo(v));
-    return { look: [c.x - shift, c.y + lift, c.z], pos: [c.x - shift, c.y + lift + 0.4, c.z + Math.max(minDist, ext * k)] };
-  };
-  POSES.workflow = frame(graph.path.map(nodeVec), 7, 3);
-  POSES.call = frame([VOICE_C, ...callHubs.map(nodeVec)], 10, 2.7);
-  const zoomPose = (c: THREE.Vector3): Pose => ({ look: [c.x, c.y, c.z], pos: [c.x + 0.8, c.y + 0.7, c.z + 5.8] });
-  const emailHub = nodeVec(hubOfCluster(1));
-  const projectHub = nodeVec(hubOfCluster(2));
-  POSES['zoom-email'] = zoomPose(emailHub);
-  POSES['zoom-project'] = zoomPose(projectHub);
+  // Kamera-Stationen des unteren Teils, abhängig von der Welt
   const sh = mobile ? 0 : -4.5;
   const near = (c: THREE.Vector3, d: number): Pose => ({ look: [c.x + sh, c.y, c.z], pos: [c.x + sh, c.y + d * 0.08, c.z + d] });
   POSES['services-ki'] = near(SERVICE_GROUPS[0], 26);
@@ -495,26 +348,8 @@ export function mountJourney(section: HTMLElement | null) {
   POSES['services-bi'] = near(SERVICE_GROUPS[2], 26);
   POSES.process = near(PROCESS_C, 20);
   POSES.about = near(ABOUT_C, 14);
-  // backcall: auf dem Weg vom Workflow zum Planeten schwenkt die Kamera nach außen
-  const wp = POSES.workflow;
-  const cp = POSES.call;
-  const old = VIAS.findIndex((x) => x.at === 'to-call'); // erneutes Einhängen (Reduced-Motion-Test) nicht doppeln
-  if (old >= 0) VIAS.splice(old, 1);
-  VIAS.push({
-    at: 'to-call',
-    t: 0.45,
-    pose: {
-      pos: [lerp(wp.pos[0], cp.pos[0], 0.5), lerp(wp.pos[1], cp.pos[1], 0.5) + 3, lerp(wp.pos[2], cp.pos[2], 0.5) + 6],
-      look: [lerp(wp.look[0], cp.look[0], 0.5), lerp(wp.look[1], cp.look[1], 0.5), lerp(wp.look[2], cp.look[2], 0.5)],
-    },
-  });
-  if (mobile) {
-    // Mobil: Motive mittig und oberhalb des Textblocks
-    POSES.result = { pos: [0, -16, 118], look: [0, -20, 0] };
-    POSES['stack-eu'] = { pos: [0, -12, 100], look: [0, -16, 0] };
-    POSES.contact = { pos: [0, -1, 24], look: [0, -2, 0] };
-    for (const v of VIAS) if (v.at === 'to-graph' && v.t < 0.5) v.pose = { pos: [0, 14, 4], look: [0, bins.y, 0] };
-  }
+  // Mobil: Motive mittig und oberhalb des Textblocks
+  if (mobile) POSES.contact = { pos: [0, -1, 24], look: [0, -2, 0] };
   buildKeyframes();
 
   // Knoten (weicher Punkt, Hubs mit Ring; Farbe zwischen Ink und Silber)
@@ -613,18 +448,6 @@ export function mountJourney(section: HTMLElement | null) {
   const flowMat = new THREE.PointsMaterial({ color: 0x141414, size: 0.07, map: dot, transparent: true, opacity: 0, depthWrite: false });
   world.add(new THREE.Points(flowGeo, flowMat));
 
-  // Workflow-Pfad (Kette durch 6 Knoten) mit Lichtpunkt an der Spitze
-  const pathPos = new Float32Array(5 * 2 * 3);
-  const pathGeo = new THREE.BufferGeometry();
-  pathGeo.setAttribute('position', new THREE.BufferAttribute(pathPos, 3));
-  const pathMat = new THREE.LineBasicMaterial({ color: 0x141414, transparent: true, opacity: 0.9, depthWrite: false });
-  world.add(new THREE.LineSegments(pathGeo, pathMat));
-  const headPos = new Float32Array(3);
-  const headGeo = new THREE.BufferGeometry();
-  headGeo.setAttribute('position', new THREE.BufferAttribute(headPos, 3));
-  const headMat = new THREE.PointsMaterial({ color: 0x141414, size: 0.32, map: dot, transparent: true, opacity: 0, depthWrite: false });
-  world.add(new THREE.Points(headGeo, headMat));
-
   // Hintergrund-Partikel (Anrufe, Dokumente): treiben ungeordnet und verschmelzen später mit den Knoten
   const DUST = mobile ? 140 : 300;
   const drand = mulberry32(7);
@@ -640,98 +463,12 @@ export function mountJourney(section: HTMLElement | null) {
   const dustGeo = new THREE.BufferGeometry();
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
   const dustMat = new THREE.PointsMaterial({ color: 0x555555, size: 0.12, map: dot, transparent: true, opacity: 0, depthWrite: false });
-  world.add(new THREE.Points(dustGeo, dustMat));
-
-  // Umschläge
-  const envPos = new Float32Array(M * 3);
-  const envSize = new Float32Array(M);
-  const envAlpha = new Float32Array(M);
-  const envGeo = new THREE.BufferGeometry();
-  envGeo.setAttribute('position', new THREE.BufferAttribute(envPos, 3));
-  envGeo.setAttribute('aSize', new THREE.BufferAttribute(envSize, 1));
-  envGeo.setAttribute('aAlpha', new THREE.BufferAttribute(envAlpha, 1));
-  const envMat = new THREE.ShaderMaterial({
-    uniforms: { uPx, uMap: { value: envelopeTexture() } },
-    vertexShader: SPRITE_VERTEX,
-    fragmentShader: `
-      uniform sampler2D uMap;
-      varying float vA;
-      void main() {
-        vec4 c = texture2D(uMap, gl_PointCoord);
-        if (c.a * vA < 0.01) discard;
-        gl_FragColor = vec4(c.rgb, c.a * vA);
-        #include <colorspace_fragment>
-      }`,
-    transparent: true,
-    depthWrite: false,
-  });
-  world.add(new THREE.Points(envGeo, envMat));
+  const dustPts = new THREE.Points(dustGeo, dustMat);
+  world.add(dustPts);
 
   // Äußere Welt (world.ts): mehrere tausend Knoten, komplett im Vertex-Shader
   const outer = buildWorld(mobile ? 1200 : 4000, mulberry32(23), { uPx, uFar });
   world.add(...outer.objects);
-
-  // backcall: Stimmen-Planet neben dem Graphen, Signalpfad durch Call → Knowledge → Task → Employee
-  const voice = buildVoice(VOICE_C, VOICE_R, mobile ? 700 : 1800, dot, uPx);
-  world.add(voice.group);
-  const callPts = callHubs.map(nodeVec);
-  voice.setPath([VOICE_C.clone().add(callPts[0].clone().sub(VOICE_C).setLength(VOICE_R)), ...callPts], world);
-  const callReach = new Float32Array(N); // 0..1: Signal hat den Hub erreicht
-  let focus = 0; // Detail-Zoom aktiv: Umgebung tritt zurück
-
-  // Detail-Szenen: Unterknoten auf einem geneigten Ring um einen Knoten, Labels kreisen mit
-  const makeDetail = (center: THREE.Vector3, n: number) => {
-    const g = new THREE.Group();
-    g.position.copy(center);
-    g.rotation.x = 1.05;
-    const R = 1.5;
-    const pts = new Float32Array(n * 3);
-    const spokes = new Float32Array(n * 6);
-    const base = Array.from({ length: n }, (_, k) => {
-      const a = (k / n) * Math.PI * 2 + 0.4;
-      pts[k * 3] = spokes[k * 6 + 3] = Math.cos(a) * R;
-      pts[k * 3 + 1] = spokes[k * 6 + 4] = Math.sin(a) * R;
-      return new THREE.Vector3(Math.cos(a) * R * 1.16, Math.sin(a) * R * 1.16, 0);
-    });
-    const pg = new THREE.BufferGeometry();
-    pg.setAttribute('position', new THREE.BufferAttribute(pts, 3));
-    const sg = new THREE.BufferGeometry();
-    sg.setAttribute('position', new THREE.BufferAttribute(spokes, 3));
-    const dotMat = new THREE.PointsMaterial({ color: 0x141414, size: 0.28, map: dot, transparent: true, opacity: 0, depthWrite: false });
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x141414, transparent: true, opacity: 0, depthWrite: false });
-    const ring = new THREE.LineLoop(circle(), lineMat);
-    ring.scale.setScalar(R);
-    g.add(new THREE.LineSegments(sg, lineMat), ring, new THREE.Points(pg, dotMat));
-    world.add(g);
-    const anchors = Array.from({ length: n + 1 }, () => new THREE.Vector3());
-    anchors[n].copy(center);
-    return {
-      anchors,
-      sync(show: number, t: number) {
-        g.visible = show > 0.001;
-        g.scale.setScalar(Math.max(0.001, 1 - (1 - show) ** 3));
-        g.rotation.z = t * 0.06; // langsames Kreisen (Ambient)
-        dotMat.opacity = show;
-        lineMat.opacity = 0.45 * show;
-        g.updateMatrix();
-        for (let k = 0; k < n; k++) anchors[k].copy(base[k]).applyMatrix4(g.matrix);
-      },
-    };
-  };
-  const detailEls = (key: string) => Array.from(section.querySelectorAll<HTMLElement>(`[data-detail="${key}"]`));
-  const details = (['email', 'project'] as const).map((key) => {
-    const els = detailEls(key);
-    const id = key === 'email' ? 'zoom-email' : 'zoom-project';
-    const prev = key === 'email' ? 'to-email' : 'to-project';
-    const next = key === 'email' ? 'to-flow' : 'to-result';
-    const subs = els.filter((el) => el.dataset.i !== 'title');
-    return {
-      id,
-      show: [at(prev, 0.55), at(id, 0), at(next, 0), at(next, 0.4)] as const,
-      scene: makeDetail(key === 'email' ? emailHub : projectHub, subs.length),
-      els: [...els.filter((el) => el.dataset.i === 'title'), ...subs], // Titel zuerst, dann die Unterknoten
-    };
-  });
 
   // Unterer Teil: Ablauf-Pfad (4 Knoten) und Vincent & Jesse (2 verbundene Knoten)
   const stepNodes = [0, 1, 2, 3].map((k) => PROCESS_C.clone().add(new THREE.Vector3(k * 4.4 - 6.6, Math.sin(k * 1.4) * 1.8, -k * 1.6)));
@@ -774,40 +511,20 @@ export function mountJourney(section: HTMLElement | null) {
       b: p0,
       c: next ? p1 : 2,
       d: next ? p1 + span(next.id) * (id === 'hero' ? 0.5 : 0.3) : 3,
-      lines: Array.from(el.querySelectorAll<HTMLElement>('[data-line]')),
-      steps: Array.from(el.querySelectorAll<HTMLElement>('[data-step]')),
       focusables: Array.from(el.querySelectorAll<HTMLElement>('a, button')),
       on: null as boolean | null, // erster Frame schreibt immer
     };
   });
-  // Fortschritt der Schritt-Listen (Workflow, backcall): Pfad und Text laufen gemeinsam
-  const stepProgress = (id: string, p: number) => clamp(local(id, p) / STEPS_END);
 
-  // Beschriftungen in der Szene (alle illustrativ): Anker in Weltkoordinaten, Sichtbarkeit je Frame
-  const labels = Array.from(section.querySelectorAll<HTMLElement>('[data-label]')).map((el) => ({
-    el,
-    anchor: graph.centers[Number(el.dataset.label)],
-  }));
-  const binLabels = Array.from(section.querySelectorAll<HTMLElement>('[data-bin]')).map((el) => ({
-    el,
-    anchor: new THREE.Vector3(bins.x[Number(el.dataset.bin)], binTop, 0),
-  }));
-  const callAnchors = [VOICE_C.clone().add(new THREE.Vector3(0, VOICE_R * 1.45, 0)), ...callPts];
-  const callLabels = Array.from(section.querySelectorAll<HTMLElement>('[data-call]')).map((el) => ({
-    el,
-    k: Number(el.dataset.call),
-    anchor: callAnchors[Number(el.dataset.call)],
-  }));
+  // Beschriftungen der Ablauf-Knoten im unteren Teil: Anker in Weltkoordinaten, Sichtbarkeit je Frame
   const stepLabels = Array.from(section.querySelectorAll<HTMLElement>('[data-step-node]')).map((el) => ({
     el,
     k: Number(el.dataset.stepNode),
     anchor: stepNodes[Number(el.dataset.stepNode)].clone().add(new THREE.Vector3(0, 1.1, 0)),
   }));
-  const personEls = Array.from(section.querySelectorAll<HTMLElement>('[data-person]')).map((el) => ({
-    el,
-    anchor: people[Number(el.dataset.person)],
-  }));
-  const progressFill = section.querySelector<HTMLElement>('[data-progress-fill]');
+  const svcRail = section.querySelector<HTMLElement>('[data-svc-rail]');
+  const svcFill = section.querySelector<HTMLElement>('[data-svc-fill]');
+  const svcSteps = Array.from(section.querySelectorAll<HTMLElement>('[data-svc-step]'));
 
   let fov = FOV;
   const resize = () => {
@@ -822,65 +539,33 @@ export function mountJourney(section: HTMLElement | null) {
 
   // Zeitpunkte (p) der einzelnen Abläufe, aus der Zeitachse abgeleitet
   const T = {
-    wavesOut: [at('hero', 0.2), at('to-flood', 0.6)],
-    star: [at('hero', 0.35), at('to-flood', 0.9)],
-    hero: [at('hero', 0.15), at('to-flood', 0.5)],
-    dustIn: [at('to-flood', 0.2), at('flood', 0)],
-    binsIn: [at('to-sort', 0.3), at('sort', 0)],
-    binsOut: [at('to-graph', 0), at('to-graph', 0.35)],
+    star: [at('hero', 0.35), at('to-graph', 0.45)],
+    hero: [at('hero', 0.15), at('to-graph', 0.25)],
+    dustIn: [at('to-graph', 0), at('to-graph', 0.2)],
     org: [at('to-graph', 0), at('graph', 0)],
     dustMerge: [at('to-graph', 0.05), at('graph', 0) - RV * 0.3],
     dustOut: [at('to-graph', 0.3), at('graph', 0)],
     flowIn: [at('to-graph', 0.6), at('graph', 0)],
-    labelsIn: [at('to-graph', 0.7), at('graph', 0)],
-    labelsOut: [at('to-email', 0), at('to-email', 0.5)],
-    flash: [at('to-email', 0), at('to-email', 0.6)],
-    dim: [at('to-flow', 0.2), at('workflow', 0)],
-    undim: [at('to-result', 0), at('to-result', 0.5)],
-    pathIn: [at('to-flow', 0.7), at('workflow', 0)],
-    pathFade: [at('to-call', 0), at('call', 0)],
-    pathOut: [at('to-result', 0), at('to-result', 0.5)],
-    headIn: [at('to-flow', 0.8), at('workflow', 0)],
-    headOut: [at('to-call', 0), at('to-call', 0.4)],
-    voiceIn: [at('to-call', 0.3), at('call', 0)],
-    voiceAmp: [at('to-call', 0.7), at('call', 0.1)],
-    voiceQuiet: [at('to-project', 0), at('to-project', 0.6)],
-    sweep: [at('to-call', 0.15), at('to-call', 0.8)],
-    beamIn: [at('to-call', 0.85), at('call', 0)],
-    callOut: [at('to-project', 0), at('to-project', 0.4)],
-    beamOut: [at('to-result', 0), at('to-result', 0.5)],
-    sway: [at('to-result', 0), at('result', 0)],
     calm: [at('to-services', 0), at('to-services', 0.6)],
     lowerVeil: [at('to-services', 0.5), at('services-ki', 0.15)],
     contactCalm: [at('contact', 0.2), at('contact', 0.6)],
-    worldIn: [at('to-project', 0.4), at('result', 0)],
+    worldIn: [at('to-services', 0.2), at('to-services', 0.8)],
   } satisfies Record<string, [number, number]>;
   const tw = (k: keyof typeof T, p: number) => smooth(T[k][0], T[k][1], p);
-  const wf = (p: number) => stepProgress('workflow', p); // Fortschritt des Workflow-Pfads
-  const cf = (p: number) => stepProgress('call', p); // Fortschritt des backcall-Signalpfads
 
   // Knotenpositionen: ordnen sich von verstreut zu Clustern
+  nodeSize.set(graph.size);
   const syncNodes = (p: number, t: number) => {
     const org = tw('org', p);
-    const hi = smooth(0, 1, wf(p));
-    const dim = tw('dim', p) * (1 - tw('undim', p));
-    const reach = cf(p) * CALL_CLUSTERS.length;
-    for (let k = 0; k < callHubs.length; k++) callReach[callHubs[k]] = smooth(k, k + 0.3, reach) * (1 - tw('beamOut', p));
     for (let i = 0; i < N; i++) {
       const j = i * 3;
       const drift = Math.sin(t * 0.6 + i) * 0.06;
       nodePos[j] = lerp(graph.scatter[j], graph.final[j], org) + drift;
       nodePos[j + 1] = lerp(graph.scatter[j + 1], graph.final[j + 1], org) + drift * 0.7;
       nodePos[j + 2] = lerp(graph.scatter[j + 2], graph.final[j + 2], org) + drift * 0.5;
-
-      const inPath = pathSet.has(i);
-      const lit = callReach[i];
-      const reveal = smooth(graph.reveal[i], graph.reveal[i] + RV, p);
-      nodeSize[i] = graph.size[i] * (inPath ? 1 + (graph.ring[i] ? 0.5 : 2.2) * hi * (1 - tw('pathOut', p)) : 1) * (1 + lit);
-      nodeAlpha[i] = reveal * (inPath || lit > 0 ? 1 : 1 - 0.55 * dim) * (graph.ring[i] ? 1 : 1 - 0.75 * focus);
+      nodeAlpha[i] = smooth(graph.reveal[i], graph.reveal[i] + RV, p);
     }
     nodeGeo.attributes.position.needsUpdate = true;
-    nodeGeo.attributes.aSize.needsUpdate = true;
     nodeGeo.attributes.aAlpha.needsUpdate = true;
   };
 
@@ -899,35 +584,13 @@ export function mountJourney(section: HTMLElement | null) {
     }
     edgeGeo.setDrawRange(0, revealed * 2);
     edgeGeo.attributes.position.needsUpdate = true;
-    // Hook nach der Graph-Station: alle Kanten leuchten einmal auf
-    const flash = win(T.flash[0], T.flash[1], p);
-    edgeMat.uniforms.uOpacity.value = (lerp(0.5, 0.16, tw('dim', p) * (1 - tw('undim', p))) + 0.5 * flash) * (1 - 0.7 * focus);
-    edgeMat.uniforms.uColor.value.lerpColors(EDGE, INK, flash);
     return revealed;
   };
 
-  // Pfad zeichnet sich Schritt für Schritt; jeder Abschnitt endet, wenn der zugehörige Schritt im Text aufleuchtet
-  const syncPath = (p: number) => {
-    const f = wf(p) * 5;
-    const s = Math.min(4, Math.floor(f));
-    const frac = smooth(0, 1, f - s);
-    for (let k = 0; k < 5; k++) {
-      const a = graph.path[k] * 3;
-      const b = graph.path[k + 1] * 3;
-      const endT = k < s ? 1 : k === s ? frac : 0;
-      for (let c = 0; c < 3; c++) {
-        pathPos[k * 6 + c] = nodePos[a + c];
-        pathPos[k * 6 + 3 + c] = lerp(nodePos[a + c], nodePos[b + c], endT);
-      }
-    }
-    pathGeo.attributes.position.needsUpdate = true;
-    pathMat.opacity = 0.9 * tw('pathIn', p) * (1 - tw('pathFade', p) * 0.5) * (1 - tw('pathOut', p));
-    for (let c = 0; c < 3; c++) headPos[c] = pathPos[s * 6 + 3 + c];
-    headGeo.attributes.position.needsUpdate = true;
-    headMat.opacity = tw('headIn', p) * (1 - tw('headOut', p));
-  };
-
   const syncDust = (p: number, t: number) => {
+    dustMat.opacity = 0.6 * tw('dustIn', p) * (1 - tw('dustOut', p));
+    dustPts.visible = dustMat.opacity > 0.001;
+    if (!dustPts.visible) return; // Staub lebt nur im ersten Übergang
     const m = tw('dustMerge', p);
     for (let i = 0; i < DUST; i++) {
       const j = i * 3;
@@ -938,30 +601,6 @@ export function mountJourney(section: HTMLElement | null) {
       dustPos[j + 2] = lerp(dustChaos[j + 2] + Math.sin(t * 0.35 + ph * 0.7) * 0.8, nodePos[target + 2], m);
     }
     dustGeo.attributes.position.needsUpdate = true;
-    dustMat.opacity = 0.6 * tw('dustIn', p) * (1 - tw('dustOut', p));
-  };
-
-  const syncEnvelopes = (p: number, t: number) => {
-    for (let i = 0; i < M; i++) {
-      const j = i * 3;
-      const e = smooth(envIn[i], envIn[i] + ENV_FLY, p);
-      const s = smooth(envSort[i], envSort[i] + ENV_SORT, p);
-      const g = smooth(envMerge[i], envMerge[i] + ENV_MERGE, p);
-      const ph = envPh[i];
-      const wob = 1 - s; // im Fach kommt der Umschlag zur Ruhe
-      const n = envTarget[i] * 3;
-      for (let c = 0; c < 3; c++) {
-        const drift = Math.sin(t * (0.5 - c * 0.08) + ph * (1 + c * 0.3)) * 0.45 * wob;
-        const free = lerp(envStart[j + c], envChaos[j + c] + drift, e);
-        envPos[j + c] = lerp(lerp(free, envBin[j + c], s), nodePos[n + c], g);
-      }
-      envPos[j + 1] += Math.sin(g * Math.PI) * 0.6; // leichter Bogen auf dem Weg in den Graphen
-      envSize[i] = lerp(envBase * lerp(0.3, 1, e), graph.size[envTarget[i]], g);
-      envAlpha[i] = e * (1 - smooth(0.7, 1, g));
-    }
-    envGeo.attributes.position.needsUpdate = true;
-    envGeo.attributes.aSize.needsUpdate = true;
-    envGeo.attributes.aAlpha.needsUpdate = true;
   };
 
   const syncFlow = (p: number, t: number, revealed: number) => {
@@ -1015,14 +654,13 @@ export function mountJourney(section: HTMLElement | null) {
 
   const look: Vec3 = [0, 0, 0];
   const pos: Vec3 = [0, 0, 0];
-  const faceQ = new THREE.Quaternion();
   const syncCamera = (p: number) => {
     const aspect = camera.aspect || 1;
     const zMul = Math.max(1, 0.9 / aspect);
     keyframe(p, 'look', look);
     keyframe(p, 'pos', pos);
     // Dolly-Zoom im ersten Übergang (Brennweite gegen Kamerafahrt), umgekehrt beim großen Herauszoom
-    const f = FOV + 16 * bump('to-flood', p) - 16 * bump('to-result', p);
+    const f = FOV + 16 * bump('to-graph', p) - 16 * bump('to-services', p);
     if (f !== fov) {
       fov = f;
       camera.fov = f;
@@ -1036,11 +674,8 @@ export function mountJourney(section: HTMLElement | null) {
       look[2] + (pos[2] - look[2]) * k,
     );
     camera.lookAt(look[0], look[1], look[2]);
-    // Rollen um die Blickachse, nur in Übergängen
+    // Rollen um die Blickachse zwischen den Leistungen
     const roll =
-      0.3 * bump('to-sort', p) -
-      0.45 * bump('to-flow', p) +
-      0.2 * bump('to-project', p) +
       0.22 * win(at('services-ki', 0.7), at('services-ml', 0.3), p) -
       0.22 * win(at('services-ml', 0.7), at('services-bi', 0.3), p);
     if (roll) camera.rotateZ(roll);
@@ -1048,18 +683,26 @@ export function mountJourney(section: HTMLElement | null) {
   };
 
   const v = new THREE.Vector3();
+  // Styles nur bei Änderung schreiben: spart Style-Neuberechnung in jedem Frame
+  const lastCss = new WeakMap<HTMLElement, Record<string, string>>();
+  const css = (el: HTMLElement, k: 'opacity' | 'transform', v: string) => {
+    let c = lastCss.get(el);
+    if (!c) lastCss.set(el, (c = {}));
+    if (c[k] !== v) el.style[k] = c[k] = v;
+  };
+
   const place = (el: HTMLElement, anchor: THREE.Vector3, show: number, w: number, h: number) => {
-    el.style.opacity = String(show);
+    css(el, 'opacity', String(show));
     if (show <= 0) return;
     v.copy(anchor).applyMatrix4(world.matrixWorld).project(camera);
-    el.style.transform = `translate(${(v.x + 1) * 0.5 * w}px, ${(1 - v.y) * 0.5 * h}px)`;
+    css(el, 'transform', `translate(${(v.x + 1) * 0.5 * w}px, ${(1 - v.y) * 0.5 * h}px)`);
   };
 
   const syncOverlay = (p: number) => {
     for (const s of scenes) {
       const a = smooth(s.a, s.b, p) * (1 - smooth(s.c, s.d, p));
-      s.el.style.opacity = String(a);
-      if (s.id !== 'hero') s.el.style.transform = `translateY(${(1 - a) * 16}px)`;
+      css(s.el, 'opacity', String(a));
+      if (s.id !== 'hero') css(s.el, 'transform', `translateY(${(1 - a) * 16}px)`);
       const on = a > 0.5;
       if (on !== s.on) {
         // Ausgeblendete Szenen: nicht klickbar und nicht per Tab erreichbar
@@ -1067,74 +710,35 @@ export function mountJourney(section: HTMLElement | null) {
         s.el.style.pointerEvents = on ? 'auto' : 'none';
         for (const f of s.focusables) f.tabIndex = on ? 0 : -1;
       }
-      // Zeile für Zeile über die erste Hälfte der Station, danach steht der Text
-      const l = local(s.id, p);
-      const n = s.lines.length;
-      for (let i = 0; i < n; i++) {
-        const start = 0.04 + (i / n) * (REVEAL_END - 0.12);
-        s.lines[i].style.opacity = String(smooth(start, start + 0.12, l));
-      }
-      // Schritte leuchten auf, wenn der Pfad den zugehörigen Knoten erreicht
-      const m = s.steps.length;
-      if (m) {
-        const active = Math.floor(stepProgress(s.id, p) * (m - 1) + 1e-6);
-        for (let i = 0; i < m; i++) s.steps[i].classList.toggle('is-on', i <= active);
-      }
     }
     // Hero reagiert auf den ersten Scroll: Überschrift zoomt in die Tiefe, Subline gleitet seitlich weg
     const hu = tw('hero', p);
     const [by, h1, sub] = heroBits;
-    if (by) by.style.transform = `translateY(${-hu * 24}px)`;
-    if (h1) h1.style.transform = `scale(${1 + hu * 0.35})`;
-    if (sub) sub.style.transform = `translateX(${-hu * 90}px)`;
-    if (progressFill) progressFill.style.transform = `scaleX(${p})`;
-    if (waves) {
-      const o = 1 - tw('wavesOut', p);
-      waves.style.opacity = String(o);
-      waves.style.visibility = o < 0.01 ? 'hidden' : 'visible';
+    if (by) css(by, 'transform', `translateY(${-hu * 24}px)`);
+    if (h1) css(h1, 'transform', `scale(${1 + hu * 0.35})`);
+    if (sub) css(sub, 'transform', `translateX(${-hu * 90}px)`);
+    // Stufen-Balken: füllt sich von Leistung 01 bis 03 (Mitte der Stationen = Text in Bildmitte)
+    if (svcRail && svcFill) {
+      const f = clamp((p - at('services-ki', 0.5)) / (at('services-bi', 0.5) - at('services-ki', 0.5)));
+      css(svcRail, 'opacity', String(smooth(at('to-services', 0.8), at('services-ki', 0.2), p) * (1 - smooth(at('services-bi', 0.8), at('process', 0.2), p))));
+      css(svcFill, 'transform', `scaleY(${f})`);
+      svcSteps.forEach((el, k) => el.classList.toggle('is-on', f >= k / 2 - 0.001));
     }
-    if (lowerVeil) lowerVeil.style.opacity = String(tw('lowerVeil', p));
-    if (veil) veil.style.opacity = String(1 - focus); // Detail-Zooms haben keinen Text, Labels liegen auch links
+    if (lowerVeil) css(lowerVeil, 'opacity', String(tw('lowerVeil', p)));
 
     world.updateMatrixWorld(true);
     const w = stage.clientWidth;
     const h = stage.clientHeight;
-    const showLabels = tw('labelsIn', p) * (1 - tw('labelsOut', p));
-    for (const l of labels) place(l.el, l.anchor, showLabels, w, h);
-    const showBins = tw('binsIn', p) * (1 - tw('binsOut', p));
-    for (const l of binLabels) place(l.el, l.anchor, showBins, w, h);
-    for (const d of details) {
-      const out = 1 - smooth(d.show[2], d.show[3], p);
-      const ld = local(d.id, p);
-      const n = d.els.length;
-      for (let k = 0; k < n; k++) {
-        const st = 0.04 + (k / n) * 0.4;
-        // Anker: letzter = Mittelpunkt (Titel), davor die Unterknoten
-        place(d.els[k], d.scene.anchors[k === 0 ? n - 1 : k - 1], smooth(st, st + 0.1, ld) * out, w, h);
-      }
-    }
-    const callShow = tw('voiceIn', p) * (1 - tw('callOut', p));
-    const reach = cf(p) * CALL_CLUSTERS.length;
-    for (const l of callLabels) place(l.el, l.anchor, callShow * (l.k === 0 ? 1 : smooth(l.k - 0.2, l.k, reach)), w, h);
     const lp = local('process', p);
     const processOut = 1 - smooth(at('about', 0), at('about', 0.25), p);
     for (const l of stepLabels) place(l.el, l.anchor, smooth(0.15 + l.k * 0.18, 0.22 + l.k * 0.18, lp) * processOut, w, h);
-    const personShow = smooth(at('about', 0.15), at('about', 0.4), p) * (1 - smooth(at('about', 0.85), at('contact', 0.2), p));
-    for (const l of personEls) place(l.el, l.anchor, personShow, w, h);
   };
 
-  const detailShow = details.map(() => 0);
   const update = (p: number, t: number) => {
-    focus = 0;
-    for (let k = 0; k < details.length; k++) {
-      const d = details[k];
-      detailShow[k] = smooth(d.show[0], d.show[1], p) * (1 - smooth(d.show[2], d.show[3], p));
-      focus = Math.max(focus, detailShow[k]);
-    }
     syncCamera(p);
     // unterer Teil: Welt steht still, die Kamera trägt die Bewegung (Drehung um den Ursprung würde ferne Motive verschieben)
     const still = 1 - tw('calm', p);
-    world.rotation.y = (pointer.x * 0.12 + tw('sway', p) * Math.sin(t * 0.3) * 0.15) * still + (Math.PI / 3) * bump('to-flow', p);
+    world.rotation.y = pointer.x * 0.12 * still;
     world.rotation.x = pointer.y * 0.06 * still;
     starU.uT.value = tw('star', p);
     starU.uTime.value = t;
@@ -1142,27 +746,11 @@ export function mountJourney(section: HTMLElement | null) {
     starGroup.visible = starU.uT.value < 0.999;
     syncNodes(p, t);
     const revealed = syncEdges(p);
-    syncPath(p);
     syncDust(p, t);
-    syncEnvelopes(p, t);
     syncFlow(p, t, revealed);
     outer.uniforms.uP.value = p;
     outer.uniforms.uTime.value = t;
     outer.uniforms.uFlow.value = 1 - tw('contactCalm', p) * 0.85;
-    for (let k = 0; k < details.length; k++) details[k].scene.sync(detailShow[k], t);
-    outer.uniforms.uFade.value = 1 - 0.7 * focus;
-    faceQ.copy(world.quaternion).invert().multiply(camera.quaternion);
-    voice.sync({
-      show: tw('voiceIn', p),
-      amp: tw('voiceAmp', p) * (1 - 0.75 * tw('voiceQuiet', p)),
-      phase: (p - at('to-call', 0)) / span('call'),
-      rings: tw('voiceAmp', p) * (1 - tw('callOut', p)),
-      sweep: clamp((p - T.sweep[0]) / (T.sweep[1] - T.sweep[0])),
-      beam: cf(p),
-      beamAlpha: tw('beamIn', p) * (1 - tw('beamOut', p)),
-      t,
-      face: faceQ,
-    });
     syncLower(p, t);
     syncOverlay(p);
     renderer.render(scene, camera);
@@ -1208,6 +796,10 @@ export function mountJourney(section: HTMLElement | null) {
     raf = requestAnimationFrame(tick);
     const dt = Math.min(0.1, (now - lastT) / 1000);
     lastT = now;
+    if (scrollDirty) {
+      scrollDirty = false;
+      pTarget = computeP();
+    }
     pCur += (pTarget - pCur) * (1 - Math.exp(-P_DAMP * dt));
     if (Math.abs(pTarget - pCur) < 0.0001) pCur = pTarget;
     const k = 1 - Math.exp(-3.7 * dt);
@@ -1227,8 +819,9 @@ export function mountJourney(section: HTMLElement | null) {
     cancelAnimationFrame(raf);
   };
 
+  let scrollDirty = false;
   const onScroll = () => {
-    pTarget = computeP();
+    scrollDirty = true;
   };
   const onResize = () => {
     resize();
@@ -1243,7 +836,7 @@ export function mountJourney(section: HTMLElement | null) {
     // Keine Bewegung: ein Standbild der Welt, Texte statisch darunter
     section.classList.add('journey-static');
     resize();
-    pTarget = pCur = at('result', 0.5);
+    pTarget = pCur = at('services-ki', 0.5);
     update(pCur, 0);
     window.addEventListener('resize', onResize, { passive: true });
     return;
