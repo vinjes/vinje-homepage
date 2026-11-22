@@ -1,13 +1,13 @@
 ---
 import { forecastChart } from '../demo/chart';
 // Mini-Demo zu Stufe 03: ein Dashboard, das Automatisierung (Stufe 01) und Prognose (Stufe 02) zeigt. Alle Zahlen sind Beispieldaten.
-type Range = { kpis: [string, string, string, boolean, string][]; ist: number[]; fc: number[]; cats: [string, number][] };
+type Range = { kpis: [string, string, string, boolean][]; ist: number[]; fc: number[]; cats: [string, number][] };
 const DATA: Record<'week' | 'month', Range> = {
     week: {
         kpis: [
-            ['Automatisch beantwortet', '1.284', '+12 %', true, 'aus Stufe 01'],
-            ['Ø Bearbeitungszeit', '4 min', '−38 %', true, 'aus Stufe 01'],
-            ['Prognose nächste Woche (Stk.)', '3.420', '±6 %', false, 'aus Stufe 02'],
+            ['Automatisch beantwortet', '1.284', '+12 %', true],
+            ['Ø Bearbeitungszeit', '4 min', '−38 %', true],
+            ['Prognose nächste Woche (Stk.)', '3.420', '±6 %', false],
         ],
         ist: [62, 58, 71, 66, 74, 69, 80, 77],
         fc: [77, 82, 79, 86, 90],
@@ -15,9 +15,9 @@ const DATA: Record<'week' | 'month', Range> = {
     },
     month: {
         kpis: [
-            ['Automatisch beantwortet', '5.310', '+9 %', true, 'aus Stufe 01'],
-            ['Ø Bearbeitungszeit', '5 min', '−31 %', true, 'aus Stufe 01'],
-            ['Prognose nächster Monat (Stk.)', '14.800', '±8 %', false, 'aus Stufe 02'],
+            ['Automatisch beantwortet', '5.310', '+9 %', true],
+            ['Ø Bearbeitungszeit', '5 min', '−31 %', true],
+            ['Prognose nächster Monat (Stk.)', '14.800', '±8 %', false],
         ],
         ist: [48, 55, 52, 61, 59, 66, 70, 68],
         fc: [68, 72, 75, 74, 80],
@@ -41,12 +41,11 @@ const ranges = (['week', 'month'] as const).map((k) => ({ k, r: DATA[k], c: fore
     {ranges.map(({ k, r, c }) => (
         <div data-only={k} hidden={k !== 'week'}>
             <div class="grid grid-cols-3 gap-2 mt-4">
-                {r.kpis.map(([label, value, delta, good, src]) => (
+                {r.kpis.map(([label, value, delta, good]) => (
                     <div class="rounded-xl bg-paper border border-silverBorder p-3">
                         <p class="text-[11px] leading-tight text-inkMuted">{label}</p>
                         <p class="font-display text-base sm:text-lg font-semibold mt-1">{value}</p>
                         <p class:list={['text-[11px] font-medium', good ? 'text-emerald-700' : 'text-inkMuted']}>{delta}</p>
-                        <span class="demo-src">{src}</span>
                     </div>
                 ))}
             </div>
@@ -69,7 +68,7 @@ const ranges = (['week', 'month'] as const).map((k) => ({ k, r: DATA[k], c: fore
             </div>
 
             <div class="mt-3 rounded-xl border border-silverBorder p-3">
-                <p class="text-[11px] text-inkMuted">Eingänge nach Kategorie (automatisch sortiert) <span class="demo-src">aus Stufe 01</span></p>
+                <p class="text-[11px] text-inkMuted">Eingänge nach Kategorie (automatisch sortiert)</p>
                 <div class="mt-2 space-y-1.5">
                     {r.cats.map(([name, pct]) => (
                         <div class="grid grid-cols-[4.5rem_1fr_2.5rem] items-center gap-2 text-[11px]">

@@ -13,7 +13,7 @@ const views = (['4', '12'] as const).map((k) => ({ k, h: H[k], c: forecastChart(
     <div class="flex items-center justify-between gap-3">
         <div>
             <p class="font-display text-sm font-semibold">Absatzprognose · Produkt A</p>
-            <p class="text-[11px] text-inkMuted">Demo mit Beispieldaten · Datenbasis <span class="demo-src">aus Stufe 01</span></p>
+            <p class="text-[11px] text-inkMuted">Demo mit Beispieldaten</p>
         </div>
         <div class="flex p-0.5 rounded-lg bg-paper border border-silverBorder text-xs" role="group" aria-label="Prognose-Horizont">
             <button type="button" data-set="4" aria-pressed="true" class="dash-tab px-2.5 py-1 rounded-md">4 Wo.</button>
@@ -28,7 +28,7 @@ const views = (['4', '12'] as const).map((k) => ({ k, h: H[k], c: forecastChart(
                     <p class="text-[11px] text-inkMuted">Erwarteter Absatz, nächste {k} Wochen</p>
                     <p class="font-display text-2xl font-semibold">{h.value} <span class="text-sm font-normal text-inkMuted">Stk.</span></p>
                 </div>
-                <p class="text-[11px] text-inkMuted">80 %-Intervall: {h.range}</p>
+                <p class="text-[11px] text-inkMuted">Wahrscheinlich zwischen {h.range}</p>
             </div>
             <svg viewBox={`0 0 ${c.W} ${c.H}`} class="w-full h-auto mt-3" role="img" aria-label={`Absatz der letzten 12 Wochen und Prognose für ${k} Wochen (Beispieldaten)`}>
                 {[0.25, 0.5, 0.75].map((f) => <line x1="0" x2={c.W} y1={c.H * f} y2={c.H * f} stroke="#EFECE4" />)}
@@ -44,11 +44,11 @@ const views = (['4', '12'] as const).map((k) => ({ k, h: H[k], c: forecastChart(
 
     <div class="mt-4 grid grid-cols-2 gap-2">
         <div class="rounded-xl bg-paper border border-silverBorder p-3">
-            <p class="text-[11px] text-inkMuted">Modell</p>
-            <p class="text-sm font-semibold mt-0.5">Gradient Boosting</p>
+            <p class="text-[11px] text-inkMuted">Gelernt aus</p>
+            <p class="text-sm font-semibold mt-0.5">2 Jahren Verkaufsdaten</p>
         </div>
         <div class="rounded-xl bg-paper border border-silverBorder p-3">
-            <p class="text-[11px] text-inkMuted">Abweichung im Test (MAPE)</p>
+            <p class="text-[11px] text-inkMuted">Durchschnittliche Abweichung</p>
             <p class="text-sm font-semibold mt-0.5">6,2 %</p>
         </div>
     </div>
