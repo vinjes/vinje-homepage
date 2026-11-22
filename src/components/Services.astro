@@ -9,14 +9,14 @@ import ServiceChain from './ServiceChain.astro';
 // Ketten aus der früheren Pipeline-Karte im Hero (Tabs Machine Learning, Daten & BI): Input → Engine → Ergebnis
 const CHAINS = {
     ml: [
-        { step: 'Kanal & Daten-Input', title: 'Daten aus euren automatisierten Prozessen', desc: 'Dazu Bestellhistorie, Lager- & Prozessdaten' },
-        { step: 'vinje Engine', title: 'Python-Pipelines & Forecasting-Modelle', desc: 'Individuell trainierte Machine-Learning-Algorithmen' },
-        { step: 'Produktives System', results: [['Forecasting', 'Absatz-, Nachfrage- & Bestandsprognosen'], ['Python & Docker', 'Sauber deployte, wartbare ML-Pipelines']] },
+        { step: 'Was reingeht', title: 'Die Daten, die ihr ohnehin habt', desc: 'Bestellungen, Lagerbestände, Anfragen' },
+        { step: 'Was wir tun', title: 'Ein Modell, das aus eurer Vergangenheit lernt', desc: 'Auf euer Geschäft zugeschnitten, nicht von der Stange' },
+        { step: 'Was ihr bekommt', results: [['Verlässliche Prognosen', 'Wie viel ihr verkauft und nachbestellen solltet'], ['Läuft im Alltag', 'Aktualisiert sich von selbst, wir halten es am Laufen']] },
     ],
     bi: [
-        { step: 'Kanal & Daten-Input', title: 'Automatisierung, Prognosen & Bestandsdaten', desc: 'Dazu Shop-, ERP- & SQL-Quellen' },
-        { step: 'vinje Engine', title: 'SQL-Modellierung, Supabase & Python-ETL', desc: 'Automatisierte Aufbereitung & Strukturierung' },
-        { step: 'Produktives System', results: [['Live-Dashboards', 'Alle Kennzahlen an einem Ort'], ['Custom Web-Tools', 'Maßgeschneiderte interne Anwendungen']] },
+        { step: 'Was reingeht', title: 'Alle eure Zahlen, egal wo sie liegen', desc: 'Shop, Warenwirtschaft, Excel-Listen' },
+        { step: 'Was wir tun', title: 'Zusammenführen und aufräumen', desc: 'Automatisch, ohne manuelles Kopieren' },
+        { step: 'Was ihr bekommt', results: [['Ein Dashboard', 'Alle wichtigen Kennzahlen auf einen Blick'], ['Eigene Werkzeuge', 'Kleine Tools, genau für eure Abläufe']] },
     ],
 };
 ---
@@ -49,7 +49,7 @@ const CHAINS = {
                 <article class="silver-card rounded-2xl border border-silverBorder p-7 sm:p-8 flex flex-col justify-between reveal">
                     <div>
                         <div class="flex items-center justify-between mb-8">
-                            <span class="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-ink text-paper">Stufe 01 // Fundament</span>
+                            <span class="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-ink text-paper">Stufe 01</span>
                             <svg class="w-6 h-6 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
@@ -64,7 +64,7 @@ const CHAINS = {
                     <ul class="mt-8 pt-5 border-t border-silverBorder space-y-2 text-xs text-inkMuted">
                         <li class="flex items-start gap-1"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span><strong>backmail:</strong>Intelligenter E-Mail-Assistant</li>
                         <li class="flex items-start gap-1"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span><strong>backcall:</strong>KI-Voice-Assistant für Telefonanrufe</li>
-                        <li class="flex items-start gap-1"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Multi-Agent-Systeme, RAG-Chatbots &amp; KI-Integration</li>
+                        <li class="flex items-start gap-1"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Chatbots und KI-Assistenten, die eure Unterlagen kennen</li>
                     </ul>
                     <!-- backcall-Ablauf (früher eigene Station der Journey) -->
                     <div class="mt-6 pt-5 border-t border-silverBorder">
@@ -92,7 +92,7 @@ const CHAINS = {
                 <article class="silver-card rounded-2xl border border-silverBorder p-7 sm:p-8 flex flex-col justify-between reveal">
                     <div>
                         <div class="flex items-center justify-between mb-8">
-                            <span class="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-paper border border-silverBorder text-ink">Stufe 02 // baut auf 01 auf</span>
+                            <span class="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-paper border border-silverBorder text-ink">Stufe 02</span>
                             <svg class="w-6 h-6 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/>
                             </svg>
@@ -101,17 +101,17 @@ const CHAINS = {
                             Prognosen &amp; Machine Learning
                         </h3>
                         <p class="text-sm text-inkMuted mt-3 leading-relaxed">
-                            Automatisierte Prozesse liefern saubere, strukturierte Daten. Darauf setzen wir Prognose- und Machine-Learning-Modelle: Absatz, Bestand und Nachfrage werden vorhersagbar statt geschätzt.
+                            Wenn Abläufe automatisiert sind, entstehen saubere Daten. Daraus lernen unsere Modelle: Absatz, Bestand und Nachfrage werden vorhersagbar statt geschätzt.
                         </p>
                     </div>
                     <ul class="mt-8 pt-5 border-t border-silverBorder space-y-2 text-xs text-inkMuted">
-                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Forecasting-Modelle (Absatz, Bestand &amp; Nachfrage)</li>
-                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Maßgeschneiderte Python-Pipelines &amp; Datenmodelle</li>
-                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Klassifikation, Scoring &amp; Mustererkennung</li>
+                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Prognosen für Absatz, Bestand und Nachfrage</li>
+                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Auf eure Daten und euer Geschäft zugeschnitten</li>
+                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Erkennt Muster, z. B. welche Kunden abspringen könnten</li>
                     </ul>
                 </article>
                 <div class="relative lg:col-start-2 lg:row-start-1 lg:row-span-2">
-                    <DemoLink label="Workflow-Daten → Prognose" />
+                    <DemoLink label="Daten aus dem Ablauf → Prognose" />
                     <ForecastDemo />
                 </div>
                 <ServiceChain chain={CHAINS.ml} />
@@ -127,7 +127,7 @@ const CHAINS = {
                 <article class="silver-card rounded-2xl border border-silverBorder p-7 sm:p-8 flex flex-col justify-between reveal">
                     <div>
                         <div class="flex items-center justify-between mb-8">
-                            <span class="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-paper border border-silverBorder text-ink">Stufe 03 // alles im Blick</span>
+                            <span class="font-mono text-xs font-medium px-2.5 py-1 rounded-md bg-paper border border-silverBorder text-ink">Stufe 03</span>
                             <svg class="w-6 h-6 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
                             </svg>
@@ -136,17 +136,17 @@ const CHAINS = {
                             Dashboards &amp; BI
                         </h3>
                         <p class="text-sm text-inkMuted mt-3 leading-relaxed">
-                            Zum Schluss führen wir alles zusammen: Kennzahlen aus der Automatisierung, die Prognosen der Modelle und eure bestehenden Daten – in einem Dashboard, das euer Team täglich nutzt.
+                            Zum Schluss führen wir alles zusammen: Kennzahlen aus der Automatisierung, die Prognosen der Modelle und eure bestehenden Daten – in einer Übersicht, die euer Team täglich nutzt.
                         </p>
                     </div>
                     <ul class="mt-8 pt-5 border-t border-silverBorder space-y-2 text-xs text-inkMuted">
-                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Übersichtliche Dashboards &amp; KPI-Auswertungen</li>
-                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Individuelle interne Web-Tools &amp; Schnittstellen</li>
-                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Saubere SQL- &amp; Datenbank-Architekturen</li>
+                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Übersichtliche Dashboards mit euren wichtigsten Kennzahlen</li>
+                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Eigene kleine Tools und Anbindungen an eure Systeme</li>
+                        <li class="flex items-start gap-2"><span class="w-1 h-1 mt-1.5 rounded-full bg-ink shrink-0"></span>Eure Daten an einem Ort, sauber und aktuell</li>
                     </ul>
                 </article>
                 <div class="relative lg:col-start-2 lg:row-start-1 lg:row-span-2">
-                    <DemoLink label="Workflow + Prognose → Dashboard" />
+                    <DemoLink label="Ablauf + Prognose → Dashboard" />
                     <DashboardDemo />
                 </div>
                 <ServiceChain chain={CHAINS.bi} />

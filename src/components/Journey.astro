@@ -14,7 +14,6 @@ import { TIMELINE } from '../scroll/timeline';
         <canvas data-canvas class="absolute inset-0 w-full h-full opacity-60" aria-hidden="true"></canvas>
 
         <!-- Unterer Teil: Ablauf-Schritte als Knoten, Vincent & Jesse als verbundene Knoten (Desktop) -->
-        {['01', '02', '03', '04'].map((t, k) => <span data-step-node={k} class="journey-label journey-bin" aria-hidden="true">{t}</span>)}
 
         <div data-veil class="journey-veil absolute inset-0 pointer-events-none" aria-hidden="true"></div>
         <!-- Ruhiger Papier-Schleier hinter dem unteren Teil (Formulare, lange Texte) -->
@@ -63,12 +62,6 @@ import { TIMELINE } from '../scroll/timeline';
         border-radius: 9999px;
         background: #141414;
         vertical-align: middle;
-    }
-
-    .journey-bin {
-        translate: -50% 0;
-        font-size: 12px;
-        color: #141414;
     }
 
     /* Die Stage belegt oben 100vh im Fluss; die Strecke beginnt trotzdem beim ersten Pixel */
@@ -193,7 +186,6 @@ import { TIMELINE } from '../scroll/timeline';
         flex-direction: column;
     }
     .journey.journey-static [data-track],
-    .journey.journey-static .journey-bin,
     .journey.journey-static .journey-veil-lower {
         display: none;
     }

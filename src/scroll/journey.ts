@@ -270,11 +270,11 @@ export function mountJourney(section: HTMLElement | null) {
   const nodeAlpha = new Float32Array(N);
 
   // vinje-Stern aus Partikeln: steht im ersten Bild und zerfällt im ersten Übergang (Positionen im Vertex-Shader)
-  const S = mobile ? 700 : 1600;
+  const S = mobile ? 1000 : 1600;
   const srand = mulberry32(5);
   const star2d = starPoints(S, srand);
-  const starC = mobile ? new THREE.Vector3(0, 7.4, 0) : new THREE.Vector3(4.4, 0.4, 0);
-  const starH = mobile ? 5 : 5.4;
+  const starC = mobile ? new THREE.Vector3(0, 8.2, 0) : new THREE.Vector3(4.4, 0.4, 0);
+  const starH = mobile ? 4.6 : 5.4;
   const starFrom = new Float32Array(S * 3);
   const starTo = new Float32Array(S * 3);
   const starDelay = new Float32Array(S);
@@ -470,33 +470,6 @@ export function mountJourney(section: HTMLElement | null) {
   const outer = buildWorld(mobile ? 1200 : 4000, mulberry32(23), { uPx, uFar });
   world.add(...outer.objects);
 
-  // Unterer Teil: Ablauf-Pfad (4 Knoten) und Vincent & Jesse (2 verbundene Knoten)
-  const stepNodes = [0, 1, 2, 3].map((k) => PROCESS_C.clone().add(new THREE.Vector3(k * 4.4 - 6.6, Math.sin(k * 1.4) * 1.8, -k * 1.6)));
-  const people = [ABOUT_C.clone().add(new THREE.Vector3(-2, -0.3, 0)), ABOUT_C.clone().add(new THREE.Vector3(2, 0.5, 0))];
-  const spNodes = [...stepNodes, ...people];
-  const spPos = new Float32Array(spNodes.length * 3);
-  spNodes.forEach((v, i) => v.toArray(spPos, i * 3));
-  const spSize = new Float32Array(spNodes.length);
-  const spAlpha = new Float32Array(spNodes.length);
-  const spGeo = new THREE.BufferGeometry();
-  spGeo.setAttribute('position', new THREE.BufferAttribute(spPos, 3));
-  spGeo.setAttribute('aSize', new THREE.BufferAttribute(spSize, 1));
-  spGeo.setAttribute('aAlpha', new THREE.BufferAttribute(spAlpha, 1));
-  spGeo.setAttribute('aTone', new THREE.BufferAttribute(new Float32Array(spNodes.length), 1));
-  spGeo.setAttribute('aRing', new THREE.BufferAttribute(new Float32Array(spNodes.length).fill(1), 1));
-  world.add(new THREE.Points(spGeo, nodeMat));
-  const lowerLinePos = new Float32Array(4 * 6); // 3 Abschnitte Ablauf + 1 Verbindung Vincent–Jesse
-  const lowerLineGeo = new THREE.BufferGeometry();
-  lowerLineGeo.setAttribute('position', new THREE.BufferAttribute(lowerLinePos, 3));
-  const lowerLineMat = new THREE.LineBasicMaterial({ color: 0x141414, transparent: true, opacity: 0.8, depthWrite: false });
-  world.add(new THREE.LineSegments(lowerLineGeo, lowerLineMat));
-  const pairFlow = 8;
-  const pairPos = new Float32Array(pairFlow * 3);
-  const pairGeo = new THREE.BufferGeometry();
-  pairGeo.setAttribute('position', new THREE.BufferAttribute(pairPos, 3));
-  const pairMat = new THREE.PointsMaterial({ color: 0x141414, size: 0.14, map: dot, transparent: true, opacity: 0, depthWrite: false });
-  world.add(new THREE.Points(pairGeo, pairMat));
-
   // Overlay-Texte je Station: Einblenden am Ende des Übergangs davor, Ausblenden am Anfang des Übergangs danach
   const scenes = Array.from(section.querySelectorAll<HTMLElement>('[data-scene]')).map((el) => {
     const id = el.dataset.scene ?? '';
@@ -516,12 +489,6 @@ export function mountJourney(section: HTMLElement | null) {
     };
   });
 
-  // Beschriftungen der Ablauf-Knoten im unteren Teil: Anker in Weltkoordinaten, Sichtbarkeit je Frame
-  const stepLabels = Array.from(section.querySelectorAll<HTMLElement>('[data-step-node]')).map((el) => ({
-    el,
-    k: Number(el.dataset.stepNode),
-    anchor: stepNodes[Number(el.dataset.stepNode)].clone().add(new THREE.Vector3(0, 1.1, 0)),
-  }));
   const svcRail = section.querySelector<HTMLElement>('[data-svc-rail]');
   const svcFill = section.querySelector<HTMLElement>('[data-svc-fill]');
   const svcSteps = Array.from(section.querySelectorAll<HTMLElement>('[data-svc-step]'));
@@ -548,8 +515,8 @@ export function mountJourney(section: HTMLElement | null) {
     flowIn: [at('to-graph', 0.6), at('graph', 0)],
     calm: [at('to-services', 0), at('to-services', 0.6)],
     lowerVeil: [at('to-services', 0.5), at('services-ki', 0.15)],
-    contactCalm: [at('contact', 0.2), at('contact', 0.6)],
-    worldIn: [at('to-services', 0.2), at('to-services', 0.8)],
+    // ab Arbeitsweise: Graph tritt hinter Karten und Texte zurück
+    quiet: [at('services-bi', 0.8), at('process', 0.2)],
   } satisfies Record<string, [number, number]>;
   const tw = (k: keyof typeof T, p: number) => smooth(T[k][0], T[k][1], p);
 
@@ -604,7 +571,7 @@ export function mountJourney(section: HTMLElement | null) {
   };
 
   const syncFlow = (p: number, t: number, revealed: number) => {
-    flowMat.opacity = 0.8 * tw('flowIn', p) * (1 - tw('contactCalm', p) * 0.8);
+    flowMat.opacity = 0.8 * tw('flowIn', p) * (1 - tw('quiet', p) * 0.8);
     const n = Math.max(1, revealed);
     for (let k = 0; k < FLOW; k++) {
       const e = Math.floor(flowSel[k] * n) % n;
@@ -614,42 +581,6 @@ export function mountJourney(section: HTMLElement | null) {
       for (let c = 0; c < 3; c++) flowPos[k * 3 + c] = lerp(nodePos[a + c], nodePos[b + c], u);
     }
     flowGeo.attributes.position.needsUpdate = true;
-  };
-
-  // Unterer Teil: Ablauf-Pfad zeichnet sich, Vincent & Jesse verbinden sich
-  const syncLower = (p: number, t: number) => {
-    const base = tw('worldIn', p);
-    const lp = local('process', p);
-    const la = local('about', p);
-    const steps = smooth(0.15, 0.7, lp);
-    const pair = smooth(0.1, 0.35, la);
-    for (let i = 0; i < spNodes.length; i++) {
-      const on = i < 4 ? smooth(i / 3 - 0.05, i / 3 + 0.05, steps) : pair;
-      spSize[i] = (i < 4 ? 0.7 : 0.8) * (1 + 0.6 * on);
-      spAlpha[i] = base * (0.5 + 0.5 * on);
-    }
-    spGeo.attributes.aSize.needsUpdate = true;
-    spGeo.attributes.aAlpha.needsUpdate = true;
-    for (let k = 0; k < 4; k++) {
-      const a = k < 3 ? stepNodes[k] : people[0];
-      const b = k < 3 ? stepNodes[k + 1] : people[1];
-      const end = k < 3 ? clamp(steps * 3 - k) : pair;
-      a.toArray(lowerLinePos, k * 6);
-      lowerLinePos[k * 6 + 3] = lerp(a.x, b.x, end);
-      lowerLinePos[k * 6 + 4] = lerp(a.y, b.y, end);
-      lowerLinePos[k * 6 + 5] = lerp(a.z, b.z, end);
-    }
-    lowerLineGeo.attributes.position.needsUpdate = true;
-    lowerLineMat.opacity = 0.8 * base;
-    for (let k = 0; k < pairFlow; k++) {
-      const u = fract(k / pairFlow + t * 0.12);
-      const v = k % 2 ? u : 1 - u; // Austausch in beide Richtungen
-      pairPos[k * 3] = lerp(people[0].x, people[1].x, v);
-      pairPos[k * 3 + 1] = lerp(people[0].y, people[1].y, v) + Math.sin(v * Math.PI) * 0.5;
-      pairPos[k * 3 + 2] = lerp(people[0].z, people[1].z, v);
-    }
-    pairGeo.attributes.position.needsUpdate = true;
-    pairMat.opacity = pair * (1 - smooth(0.85, 1, la));
   };
 
   const look: Vec3 = [0, 0, 0];
@@ -682,20 +613,12 @@ export function mountJourney(section: HTMLElement | null) {
     uFar.value = camera.position.distanceTo(world.position) + 10;
   };
 
-  const v = new THREE.Vector3();
   // Styles nur bei Änderung schreiben: spart Style-Neuberechnung in jedem Frame
   const lastCss = new WeakMap<HTMLElement, Record<string, string>>();
   const css = (el: HTMLElement, k: 'opacity' | 'transform', v: string) => {
     let c = lastCss.get(el);
     if (!c) lastCss.set(el, (c = {}));
     if (c[k] !== v) el.style[k] = c[k] = v;
-  };
-
-  const place = (el: HTMLElement, anchor: THREE.Vector3, show: number, w: number, h: number) => {
-    css(el, 'opacity', String(show));
-    if (show <= 0) return;
-    v.copy(anchor).applyMatrix4(world.matrixWorld).project(camera);
-    css(el, 'transform', `translate(${(v.x + 1) * 0.5 * w}px, ${(1 - v.y) * 0.5 * h}px)`);
   };
 
   const syncOverlay = (p: number) => {
@@ -725,13 +648,8 @@ export function mountJourney(section: HTMLElement | null) {
       svcSteps.forEach((el, k) => el.classList.toggle('is-on', f >= k / 2 - 0.001));
     }
     if (lowerVeil) css(lowerVeil, 'opacity', String(tw('lowerVeil', p)));
+    css(renderer.domElement, 'opacity', String(1 - 0.55 * tw('quiet', p)));
 
-    world.updateMatrixWorld(true);
-    const w = stage.clientWidth;
-    const h = stage.clientHeight;
-    const lp = local('process', p);
-    const processOut = 1 - smooth(at('about', 0), at('about', 0.25), p);
-    for (const l of stepLabels) place(l.el, l.anchor, smooth(0.15 + l.k * 0.18, 0.22 + l.k * 0.18, lp) * processOut, w, h);
   };
 
   const update = (p: number, t: number) => {
@@ -750,8 +668,7 @@ export function mountJourney(section: HTMLElement | null) {
     syncFlow(p, t, revealed);
     outer.uniforms.uP.value = p;
     outer.uniforms.uTime.value = t;
-    outer.uniforms.uFlow.value = 1 - tw('contactCalm', p) * 0.85;
-    syncLower(p, t);
+    outer.uniforms.uFlow.value = 1 - tw('quiet', p) * 0.85;
     syncOverlay(p);
     renderer.render(scene, camera);
   };
