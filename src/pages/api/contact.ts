@@ -52,10 +52,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     const apiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
     if (!apiKey) {
+      console.error('Contact endpoint: RESEND_API_KEY fehlt');
       return new Response(
         JSON.stringify({
           ok: false,
-          error: 'Server-Konfiguration fehlt: RESEND_API_KEY ist noch nicht in der .env hinterlegt.',
+          error: 'Die Anfrage konnte gerade nicht gesendet werden. Bitte schreibt uns direkt an info@vinje.de.',
         }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
