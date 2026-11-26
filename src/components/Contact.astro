@@ -4,6 +4,7 @@ import { segStyle } from '../scroll/timeline';
 
 const embedUrl = getStyledCalendlyUrl();
 const rawUrl = SITE_CONFIG.calendlyUrl;
+const web3formsKey = SITE_CONFIG.web3formsAccessKey;
 ---
 
 <!-- ==================== 6. INTERAKTIVER PROJEKTKONFIGURATOR, CALENDLY & KONTAKT ==================== -->
@@ -83,7 +84,7 @@ const rawUrl = SITE_CONFIG.calendlyUrl;
 
                     <!-- ANSICHT 1: 2-Klick-Projektkonfigurator & Formular -->
                     <div id="contact-form-panel">
-                        <form id="contact-form" class="space-y-6">
+                        <form id="contact-form" data-web3forms-key={web3formsKey} class="space-y-6">
                             <!-- Schritt 1: Themenbereich wählen -->
                             <div>
                                 <label class="block text-xs font-mono uppercase tracking-wider text-inkMuted mb-3">
@@ -257,7 +258,7 @@ const rawUrl = SITE_CONFIG.calendlyUrl;
         });
     });
 
-    // Kontaktformular-Handling (Versand über Astro API-Route /api/contact + Resend)
+    // Kontaktformular-Handling (Versand direkt über Web3Forms – funktioniert auch auf statischem Hosting wie GitHub Pages)
     const contactForm = document.getElementById('contact-form') as HTMLFormElement | null;
     const formSuccess = document.getElementById('form-success');
     const formError = document.getElementById('form-error');
@@ -278,6 +279,14 @@ const rawUrl = SITE_CONFIG.calendlyUrl;
             const messageVal = messageInput?.value.trim() || '';
             const topicVal = hiddenTopicInput?.value || 'KI-Automatisierung';
             const websiteVal = websiteInput?.value.trim() || '';
+            const accessKey = contactForm.getAttribute('data-web3forms-key')?.trim() || '';
+
+            // Honeypot-Spamschutz: Wenn das versteckte Feld ausgefüllt wurde, still erfolgreich beenden
+            if (websiteVal) {
+                contactForm.classList.add('hidden');
+                formSuccess.classList.remove('hidden');
+                return;
+            }
 
             if (formError) {
                 formError.classList.add('hidden');
@@ -290,20 +299,8 @@ const rawUrl = SITE_CONFIG.calendlyUrl;
             }
 
             try {
-                const response = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        topic: topicVal,
-                        name: nameVal,
-                        email: emailVal,
-                        message: messageVal,
-                        website: websiteVal,
-                    }),
-                }).catch(() => null);
-
-                // Falls auf statischem Hosting (z. B. GitHub Pages) keine /api/contact Server-Route läuft:
-                if (!response || response.status === 404 || response.status === 405) {
+                // Falls noch kein Web3Forms Access Key hinterlegt ist, Fallback auf mailto:
+                if (!accessKey) {
                     const subject = encodeURIComponent(`[vinje Anfrage] ${topicVal} — ${nameVal}`);
                     const body = encodeURIComponent(
                         `Thema: ${topicVal}\nName / Unternehmen: ${nameVal}\nE-Mail: ${emailVal}\n\nProjektbeschreibung:\n${messageVal}`
@@ -315,10 +312,29 @@ const rawUrl = SITE_CONFIG.calendlyUrl;
                     return;
                 }
 
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        access_key: accessKey,
+                        subject: `[vinje Anfrage] ${topicVal} — ${nameVal}`,
+                        from_name: 'vinje Website',
+                        name: nameVal,
+                        email: emailVal,
+                        replyto: emailVal,
+                        Fokusthema: topicVal,
+                        message: messageVal,
+                        botcheck: websiteVal,
+                    }),
+                });
+
                 const result = await response.json();
 
-                if (!response.ok || !result.ok) {
-                    throw new Error(result.error || 'Beim Senden der Anfrage ist ein Fehler aufgetreten.');
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Beim Senden der Anfrage ist ein Fehler aufgetreten.');
                 }
 
                 successSummary.textContent = `Danke, ${nameVal}! Vincent & Jesse haben eure Anfrage zum Bereich „${topicVal}“ erhalten und melden sich innerhalb von 24 Stunden bei euch.`;

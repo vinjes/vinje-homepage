@@ -3,6 +3,12 @@ export const SITE_CONFIG = {
   calendlyUrl:
     import.meta.env.PUBLIC_CALENDLY_URL ||
     'https://calendly.com/vinje-info/30min',
+
+  // Web3Forms Access Key für das Kontaktformular (https://web3forms.com/)
+  // Kann direkt hier oder über PUBLIC_WEB3FORMS_ACCESS_KEY in der .env hinterlegt werden.
+  web3formsAccessKey:
+    import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY ||
+    'ee074ef7-6365-4a4c-ade9-9d05792e5354',
 };
 
 /**
