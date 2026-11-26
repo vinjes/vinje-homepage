@@ -2,7 +2,7 @@ export const SITE_CONFIG = {
   // Eure Calendly-URL (kann jederzeit hier oder über PUBLIC_CALENDLY_URL in der .env angepasst werden)
   calendlyUrl:
     import.meta.env.PUBLIC_CALENDLY_URL ||
-    'https://calendly.com/jesse-bakenhus/20min',
+    'https://calendly.com/vinje-info/30min',
 };
 
 /**
